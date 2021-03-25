@@ -12,7 +12,7 @@ The SBB should be cost effective, easy to maintain and use available tools and s
 
 ## Logical Interface Definition
 
-The interface of the system implemented using defined directories structure in Data Lake's Hierarchical Name Space (directories) and special naming convention of the blobs (files) stored in it. Its definition is ensured by choreography of Terraform script and Function App.
+The interface of the system implemented using defined directories structure in Data Lake's Hierarchical Name Space (directories) and special naming convention of the blobs (files) stored in it. Interface is defined by combined activities of Terraform script and Function App.
 
 ### External Party's interface (Front-End)
 
@@ -27,7 +27,7 @@ System responsible for data ingest, e.g. Azure Data Factory (ADF), regularly sca
 EPs' uploaded files should be renamed following defined naming convention. This naming convention should:
 
 * guarantee unique files' naming in the organisation's global namespace
-* contain meta-information allowing EDF map new data to the relevant EPs in the internal data stores
+* contain meta-information allowing ADF map new data to the relevant EPs in the internal data stores
 
 ## Detailed Interface Definition
 
@@ -59,18 +59,18 @@ This SBB focuses on deploying Azure cloud-native infrastructure capability allow
   * Deploy Azure Data Lake
   * Deploy secure *Service* Containers to be used by data transformation and ingestion tools e.g. Azure Data Factory. This is implementation of the Back-End interface
   * Deploy Security Groups for each EP based on the deployment environment e.g. do not deploy PROD Security Groups in DEV environment
-  * Deploy secure *EP* Containers that can only be accessed by the members of specially deployed Security Group (created earlier). This is implementation of the Front-End interface
+  * Deploy secure *EPs'* Containers that can only be accessed by the members of specifically deployed Security Group (created earlier). This is implementation of the Front-End interface
 
-* Using Azure Functions capabilities
+* Using Azure Functions Apps capabilities
 
-  * Ensure *EP's* Containers include required directories implementing Front-End interface
+  * Ensure *EPs'* Containers include required directories implementing Front-End interface
   * Ensure newly uploaded files renamed to contain appropriate meta-data in the file name and uniquely identifiable
-  * Ensure newly uploaded files moved into appropriate location for further processing (Back-End interface) and archiving
+  * Ensure newly uploaded files moved into appropriate location for further processing by data ingestion systems (Back-End interface) and archiving
 
 ### It expected NOT to do
 
 * Update content of the files
-* Exercise any validation and transformation activities
+* Exercise any validation and transformation activities on data files
 * Move data files anywhere outside of the deployed Azure Data Lake
 
 ## What this solution CAN and CAN'T do (room for improvement)
@@ -92,9 +92,9 @@ This SBB focuses on deploying Azure cloud-native infrastructure capability allow
 
 ## Debatable decisions
 
-Pros and Cons are analyzed in the scope of this solution only. For overall comparison check-out [Introduction to Azure Data Lake Storage Gen2](https://docs.microsoft.com/en-us/azure/storage/blobs/data-lake-storage-introduction) and [Introduction to Blob Storage](https://docs.microsoft.com/en-us/azure/storage/blobs/storage-blobs-introduction).
-
 ### Data Lake Gen 2 vs Blob Storage
+
+Pros and Cons are analyzed in the scope of this solution only. For overall comparison check-out [Introduction to Azure Data Lake Storage Gen2](https://docs.microsoft.com/en-us/azure/storage/blobs/data-lake-storage-introduction) and [Introduction to Blob Storage](https://docs.microsoft.com/en-us/azure/storage/blobs/storage-blobs-introduction).
 
 #### Azure Data Lake Gen 2 Pros and Cons
 
@@ -103,7 +103,7 @@ Pros | Cons
 By design, it's a set of capabilities dedicated to data analytics | .
 Various file formats suitable for ADF and HDInsights | .
 Hierarchical namespace support | .
-A superset of POSIX permissions | .
+A superset of POSIX permissions support | .
 
 #### Azure Blog Storage Pros and Cons
 
@@ -116,7 +116,7 @@ Pros | Cons
 
 ### All catalogs except Archive
 
-Main capability of this SBB is to provide a secure gateway for EPs' data files, that doesn't require various copies of original files to be stored in it for a long period of time. On the other hand, access to this files is frequent with high availability requirement for the data to be ingested ASAP. Based on this conclusion, all containers except Archive should be running on *Hot* access tier.
+Main expected capability of this SBB is to provide a secure gateway for EPs' data files transmission that doesn't require various copies of original files to be stored in it for a long period of time. In addition, access to this files is frequent and with high availability requirement for the data to be ingested ASAP. Based on this conclusion, all containers except Archive should be running on *Hot* access tier.
 
 ### Archive catalog
 
@@ -124,7 +124,7 @@ To support audit requirements, all originally submitted files should be archived
 
 ## Workspace
 
-The workspace is running on a local machine in Visual Studio Code (VSC). Terraform commands are executed from VSC terminal. It is enabled to run [Terraform using Azure PowerShell](https://docs.microsoft.com/en-us/azure/developer/terraform/get-started-powershell) capability. All code is tracked in Git and ready for DevSecOps
+At the moment, the workspace is running on a local machine in Visual Studio Code (VSC). Terraform commands are executed from VSC Terminal. It is enabled to run [Terraform using Azure PowerShell](https://docs.microsoft.com/en-us/azure/developer/terraform/get-started-powershell) capability. All code is tracked in Git and ready for DevSecOps
 
 ## Prerequisites
 

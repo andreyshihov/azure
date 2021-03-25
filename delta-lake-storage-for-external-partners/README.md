@@ -8,7 +8,7 @@ The SBB should be cost effective, easy to maintain and use available tools and s
 
 ## Solution's Architecture
 
-![Architecture](/img/scope.PNG)
+![Architecture](./img/scope.PNG)
 
 ## Logical Interface Definition
 

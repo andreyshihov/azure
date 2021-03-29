@@ -4,6 +4,12 @@ variable "project_name" {
   default     = "ext-data-files-gtw"
 }
 
+variable "tsp_account" {
+  description = "Name of the Terraform service principal account name."
+  type        = string
+  default     = "TerraformPrincipal"
+}
+
 variable "environment" {
   description = "Name of the environment."
   type        = string

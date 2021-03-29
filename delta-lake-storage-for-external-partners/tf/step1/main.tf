@@ -4,6 +4,11 @@ terraform {
       source = "hashicorp/azurerm"
       version = "~>2.0"
     }
+
+    azuread = {
+      source = "hashicorp/azuread"
+      version = "=1.4.0"
+    }
   }
 }
 
@@ -11,7 +16,14 @@ provider "azurerm" {
   features {}
 }
 
+provider "azuread" {
+}
+
 data "azurerm_subscription" "current" {
+}
+
+data "azuread_service_principal" "tsp" {
+  display_name = var.tsp_account
 }
 
 resource "azurerm_resource_group" "rg" {
@@ -52,4 +64,11 @@ resource "azurerm_storage_container" "sac3" {
   name                  = "ingest"
   storage_account_name  = azurerm_storage_account.sa.name
   container_access_type = "private"
+}
+
+# Need to assign TerraformPrincipal as Storage Blob Data Contributor
+resource "azurerm_role_assignment" "ara_tsp" {
+  scope                = azurerm_storage_account.sa.id
+  role_definition_name = "Storage Blob Data Contributor"
+  principal_id         = data.azuread_service_principal.tsp.object_id
 }

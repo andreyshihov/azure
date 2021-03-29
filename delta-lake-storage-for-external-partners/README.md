@@ -2,7 +2,7 @@
 
 ## Part 1. Definition
 
-Every business need secure and reliable way to receive data from its customers/partners/suppliers (External Party). This data considered as Bronze Grade data, that is - it has to be validated and transformed before it can reach production analytics engines, AI/ML modeling tools, destination systems and data stores.
+Every business need secure and reliable way to receive data from its customers, partners or suppliers. They could be called - External Parties (EP). This data considered as Bronze Grade data, that is - it has to be validated and transformed before it can reach production analytics engines, AI/ML modeling tools, destination systems and data stores.
 
 The SBB should be cost effective, easy to maintain and use available tools and services, including free, secure options. To comply with this principles, [Azure Storage Explorer](https://docs.microsoft.com/en-us/azure/vs-azure-tools-storage-manage-with-storage-explorer?tabs=windows) tool has been chosen to facilitate secure and reliable data upload capability.
 
@@ -63,9 +63,12 @@ This SBB focuses on deploying Azure cloud-native infrastructure capability allow
 
 * Using Azure Functions Apps capabilities
 
-  * Ensure *EPs'* Containers include required directories implementing Front-End interface
   * Ensure newly uploaded files renamed to contain appropriate meta-data in the file name and uniquely identifiable
   * Ensure newly uploaded files moved into appropriate location for further processing by data ingestion systems (Back-End interface) and archiving
+
+* Using PowerShell capabilities (Terraform embedded idempotent script)
+
+  * Ensure *EPs'* Containers include required directories implementing Front-End interface
 
 ### It expected NOT to do
 
@@ -112,19 +115,27 @@ Pros | Cons
 . | By design, it's a object storage solution
 . | Virtual directories
 
+In case if basic user experience capabilities are enough for the EPs interation, then Hierarchical Namespace capability might be disable and Blog Storage can be used instead of Data Lake Gen 2 Storage.
+
 ### Hot vs Cool access tiers
 
-### All catalogs except Archive
+#### All catalogs except Archive
 
 Main expected capability of this SBB is to provide a secure gateway for EPs' data files transmission that doesn't require various copies of original files to be stored in it for a long period of time. In addition, access to this files is frequent and with high availability requirement for the data to be ingested ASAP. Based on this conclusion, all containers except Archive should be running on *Hot* access tier.
 
-### Archive catalog
+#### Archive catalog
 
 To support audit requirements, all originally submitted files should be archived for potential analysis/investigation in the future. The volume of this data files is large, but access is rare and doesn't need to be immediate, therefore default access tier for the Archive catalog is *Archive*
+
+### Archive & Log Catalogs
+
+To reduce potential security vulnerability surface, Archive and Log catalogs could be deployed in a publically inaccessible data store.
 
 ## Workspace
 
 At the moment, the workspace is running on a local machine in Visual Studio Code (VSC). Terraform commands are executed from VSC Terminal. It is enabled to run [Terraform using Azure PowerShell](https://docs.microsoft.com/en-us/azure/developer/terraform/get-started-powershell) capability. All code is tracked in Git and ready for DevSecOps
+
+When running powershell scripts, regardless of workspace (local machine, CI/CD pipeline), PowerShell execution policies issue might occure. Solution might be found in [About PowerShell Execution Policies](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_execution_policies?view=powershell-7.1) article.
 
 ## Prerequisites
 
@@ -134,3 +145,10 @@ At the moment, the workspace is running on a local machine in Visual Studio Code
 ## Part 2. Implementation
 
 To be continued...
+
+### Useful links
+
+[Use PowerShell to manage directories and files in Azure Data Lake Storage Gen2](https://docs.microsoft.com/en-us/azure/storage/blobs/data-lake-storage-directory-file-acl-powershell)
+
+[Run PowerShell from Terraform](https://markgossa.blogspot.com/2019/04/run-powershell-from-terraform.html)
+

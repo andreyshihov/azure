@@ -152,3 +152,11 @@ To be continued...
 
 [Run PowerShell from Terraform](https://markgossa.blogspot.com/2019/04/run-powershell-from-terraform.html)
 
+[Azure Blob storage trigger for Azure Functions](https://docs.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-trigger?tabs=csharp#poison-blobs)
+
+### Improvements (Standard Naming Convention)
+terraform
+├── main.tf
+├── outputs.tf
+├── terraform.tfvars
+└── variables.tf

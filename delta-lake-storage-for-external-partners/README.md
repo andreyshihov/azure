@@ -1,5 +1,7 @@
 # Solution Building Block (SBB): Enable secure data ingestion gateway capability for the External Parties (Customers)
 
+NOTE. Read conclusion before concidering to use this solution out-of-box in production.
+
 ## Part 1. Definition
 
 Every business need secure and reliable way to receive data from its customers, partners or suppliers. They could be called - External Parties (EP). This data considered as Bronze Grade data, that is - it has to be validated and transformed before it can reach production analytics engines, AI/ML modeling tools, destination systems and data stores.
@@ -33,7 +35,7 @@ EPs' uploaded files should be renamed following defined naming convention. This 
 
 ### Front-End Interface
 
-After successful EP's authentication, its Home Directory contains following folders
+After successful EP's authentication, its Home Directory container contains following directories
 
 * Incoming - drop-off zone for the new data files
 * Report - Human readable data ingest results report for each data file
@@ -45,7 +47,6 @@ After successful EP's authentication, its Home Directory contains following fold
 Following containers defining Back-End interface
 
 * Ingest - contains data files ready to be processed by data ingestion system
-* Log - contains data file life cycle log in the scope of this SBB, mainly produced by Function App
 * Archive - contains original EPs files for audit purposes
 
 ## Solution's Scope
@@ -78,6 +79,8 @@ This SBB focuses on deploying Azure cloud-native infrastructure capability allow
 
 ## What this solution CAN and CAN'T do (room for improvement)
 
+This solution will not be tested to process large files. This solution should be concidered as a prototype and proof-of-concept.
+
 ### It can
 
 * Deploy new Security Group for each EP. (Note *prevent_duplicate_names = true*)
@@ -92,6 +95,7 @@ This SBB focuses on deploying Azure cloud-native infrastructure capability allow
 * Use existing Security Groups. Use *terraform import* to converge states or change *resource* blocks to *data* blocks for Security Groups deployment
 * Create new B2B Guest Users and add them to the Security Groups. This option is currently [unavailable](https://github.com/hashicorp/terraform-provider-azuread/issues/41) in Terraform
 * Purging old files after expiration of the retention period
+* Function App can't log its activity. To enable Logging, consider setting up Application Insigts Azure Service and assosiating it with this Function App
 
 ## Debatable decisions
 
@@ -131,6 +135,10 @@ To support audit requirements, all originally submitted files should be archived
 
 To reduce potential security vulnerability surface, Archive and Log catalogs could be deployed in a publically inaccessible data store.
 
+### In-process vs Out-of-process (Isolated) Function App
+
+This solution uses In-process Function App Implementation which impose some fine-tune disadvantages. It is possible to implement it in Isolated process but potentially requires more coding as some features like Imperative Binding aren't available in Isolated mode. To get to know pros/cons and limitations of both modes read [Guide for running functions on .NET 5.0 in Azure](https://docs.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-process-guide#differences-with-net-class-library-functions)
+
 ## Workspace
 
 At the moment, the workspace is running on a local machine in Visual Studio Code (VSC). Terraform commands are executed from VSC Terminal. It is enabled to run [Terraform using Azure PowerShell](https://docs.microsoft.com/en-us/azure/developer/terraform/get-started-powershell) capability. All code is tracked in Git and ready for DevSecOps
@@ -146,7 +154,10 @@ When running powershell scripts, regardless of workspace (local machine, CI/CD p
 
 To be continued...
 
-### Useful links
+* Mention large files processng by Function App, add garbage collector screenshots
+* Add conclusion (mention shared service plan used in DEV Env)
+
+### References
 
 [Use PowerShell to manage directories and files in Azure Data Lake Storage Gen2](https://docs.microsoft.com/en-us/azure/storage/blobs/data-lake-storage-directory-file-acl-powershell)
 
@@ -154,9 +165,14 @@ To be continued...
 
 [Azure Blob storage trigger for Azure Functions](https://docs.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-trigger?tabs=csharp#poison-blobs)
 
-### Improvements (Standard Naming Convention)
-terraform
-├── main.tf
-├── outputs.tf
-├── terraform.tfvars
-└── variables.tf
+[Deploying an Azure Function App with Terraform](https://adrianhall.github.io/typescript/2019/10/23/terraform-functions/) - deployment with Azure Functions Core Tools
+
+[Publish Azure Functions code with Terraform](https://www.maxivanov.io/publish-azure-functions-code-with-terraform/) - deployment from the storage account with terraform
+
+[Deploy Azure Functions with Terraform](https://www.maxivanov.io/deploy-azure-functions-with-terraform/) - deployment from the storage account with terraform
+
+[Using Managed Identity between Azure Functions and Azure Storage](https://docs.microsoft.com/en-us/samples/azure-samples/functions-storage-managed-identity/using-managed-identity-between-azure-functions-and-azure-storage/)
+
+[Authorize access to blob and queue data with managed identities for Azure resources](https://docs.microsoft.com/en-us/azure/storage/common/storage-auth-aad-msi)
+
+[How to rename a blob file in Azure Blob Storage (using a code snippet)](https://github.com/Azure-Samples/storage-blobs-dotnet-rename-blob)

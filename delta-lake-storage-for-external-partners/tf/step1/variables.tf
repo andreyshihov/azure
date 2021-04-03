@@ -1,7 +1,7 @@
 variable "project_name" {
   description = "Name of the project."
   type        = string
-  default     = "ext-data-files-gtw"
+  default     = "ext-gtw"
 }
 
 variable "tsp_account" {
@@ -22,12 +22,23 @@ variable "resource_tags" {
   default     = { }
 }
 
+variable "location" {
+  description = "Location of the deployemnt."
+  type        = string
+  default     = "West Europe"
+}
+
 locals {
+
   required_tags = {
     project     = var.project_name,
     environment = var.environment
   }
+
   tags = merge(var.resource_tags, local.required_tags)
-  rg_name = "rg-storage-${var.environment}"
+  rg_name = "${var.project_name}-${var.environment}-rg"
   sa_name = "lrsbronze${var.environment}"
+  asp_name = "${var.project_name}-${var.environment}-plan"
+  fa_name = "${var.project_name}-${var.environment}-fa"
+
 }

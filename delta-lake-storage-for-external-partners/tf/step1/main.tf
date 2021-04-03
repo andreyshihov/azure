@@ -1,3 +1,5 @@
+# This step doesn't contain environment specific resources
+
 terraform {
   required_providers {
     azurerm = {
@@ -28,7 +30,7 @@ data "azuread_service_principal" "tsp" {
 
 resource "azurerm_resource_group" "rg" {
   name = local.rg_name
-  location = "West Europe"
+  location = var.location
   tags = local.tags
 }
 
@@ -48,25 +50,21 @@ resource "azurerm_storage_account" "sa" {
   tags = local.tags
 }
 
-resource "azurerm_storage_container" "sac1" {
-  name                  = "log"
-  storage_account_name  = azurerm_storage_account.sa.name
-  container_access_type = "private"
-}
-
+# Archive Container
 resource "azurerm_storage_container" "sac2" {
   name                  = "archive"
   storage_account_name  = azurerm_storage_account.sa.name
   container_access_type = "private"
 }
 
+# Back-End Interface container
 resource "azurerm_storage_container" "sac3" {
   name                  = "ingest"
   storage_account_name  = azurerm_storage_account.sa.name
   container_access_type = "private"
 }
 
-# Need to assign TerraformPrincipal as Storage Blob Data Contributor
+# Assigning TerraformPrincipal as Storage Blob Data Contributor to the Storage Account
 resource "azurerm_role_assignment" "ara_tsp" {
   scope                = azurerm_storage_account.sa.id
   role_definition_name = "Storage Blob Data Contributor"

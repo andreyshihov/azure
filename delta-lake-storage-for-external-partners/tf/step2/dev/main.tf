@@ -4,12 +4,12 @@
 terraform {
   required_providers {
     azurerm = {
-      source = "hashicorp/azurerm"
+      source  = "hashicorp/azurerm"
       version = "~>2.0"
     }
 
     azuread = {
-      source = "hashicorp/azuread"
+      source  = "hashicorp/azuread"
       version = "=1.4.0"
     }
   }
@@ -36,76 +36,40 @@ data "azurerm_resource_group" "rg" {
 }
 
 data "azurerm_storage_account" "sa" {
-  name                     = local.sa_name
-  resource_group_name      = data.azurerm_resource_group.rg.name
+  name                = local.sa_name
+  resource_group_name = data.azurerm_resource_group.rg.name
 }
 
 ##################################################################################
-# RESOURCES - Security Group for Partner 1 (d7339ff0)
-##################################################################################
-# TODO make a module with below resources
-resource "azuread_group" "partner1" {
-  display_name     = "Partner 1 (d7339ff0)"
-  prevent_duplicate_names = true
-}
-
-resource "azurerm_storage_container" "sac_d7339ff0" {
-  name                  = "d7339ff0"
-  storage_account_name  = data.azurerm_storage_account.sa.name
-}
-
-resource "azurerm_role_assignment" "ra_d7339ff0" {
-  scope                = azurerm_storage_container.sac_d7339ff0.resource_manager_id
-  role_definition_name = "Storage Blob Data Contributor"
-  principal_id         = azuread_group.partner1.object_id
-}
-
-# Experimental Security Group on Subscription Level to demonstrate how it affects view in Azure Storage Explorer
-resource "azurerm_role_assignment" "arasubs" {
-  scope                = data.azurerm_subscription.current.id
-  role_definition_name = "Reader"
-  principal_id         = azuread_group.partner1.object_id
-}
-
-##################################################################################
-# RESOURCES - Security Group for Partner 2 (874e4c60)
+# RESOURCES - Security Group for Partner N (X)
 ##################################################################################
 # TODO make a module with below resources
-resource "azuread_group" "partner2" {
-  display_name     = "Partner 2 (874e4c60)"
+resource "azuread_group" "partner" {
+  display_name            = "Partner ${count.index+1} (${var.accounts[count.index]})"
   prevent_duplicate_names = true
+  count                   = length(var.accounts)
 }
 
-resource "azurerm_storage_container" "sac_874e4c60" {
-  name                  = "874e4c60"
-  storage_account_name  = data.azurerm_storage_account.sa.name
+resource "azurerm_storage_container" "sac" {
+  name                 = var.accounts[count.index]
+  storage_account_name = data.azurerm_storage_account.sa.name
+  count                = length(var.accounts)
 }
 
-resource "azurerm_role_assignment" "ra_874e4c60" {
-  scope                = azurerm_storage_container.sac_874e4c60.resource_manager_id
+resource "azurerm_role_assignment" "ra" {
+  scope                = azurerm_storage_container.sac[count.index].resource_manager_id
   role_definition_name = "Storage Blob Data Contributor"
-  principal_id         = azuread_group.partner2.object_id
+  principal_id         = azuread_group.partner[count.index].object_id
+  count                = length(var.accounts)
 }
 
-##################################################################################
-# RESOURCES - Creates directories for Partners' containers
-# taken from here: https://markgossa.blogspot.com/2019/04/run-powershell-from-terraform.html
-##################################################################################
-# TODO Partner directories should be a variable array
-resource "null_resource" "ps_run_always" {
-    triggers = {
-        trigger = "${uuid()}-a"
-    }
-
-    provisioner "local-exec" { 
-        command = ".'..\\helpers\\directory.add.ps1' -PartnerDirectories d7339ff0,874e4c60 -StorageAccountName ${local.sa_name}"
-        interpreter = ["PowerShell", "-Command"]
-    }
-
-    depends_on = [
-      azurerm_storage_container.sac_874e4c60,
-      azurerm_storage_container.sac_d7339ff0
-    ]
+resource "azurerm_storage_blob" "init" {
+  name                   = "init-container.json"
+  storage_account_name   = data.azurerm_storage_account.sa.name
+  storage_container_name = azurerm_storage_container.sac[count.index].name
+  type                   = "Block"
+  source                 = "init-container.json"
+  count                  = length(var.accounts)
 }
 
 ##################################################################################
@@ -113,16 +77,16 @@ resource "null_resource" "ps_run_always" {
 ##################################################################################
 # App Service Plan for Function App
 resource "azurerm_app_service_plan" "asp" {
-    name = local.asp_name
-    resource_group_name = data.azurerm_resource_group.rg.name
-    location = data.azurerm_resource_group.rg.location
-    kind = "FunctionApp"
-    # Linux Consumption App Service Plan
-    sku {
-        tier = "Dynamic"
-        size = "Y1"
-    }
-    tags = local.tags
+  name                = local.asp_name
+  resource_group_name = data.azurerm_resource_group.rg.name
+  location            = data.azurerm_resource_group.rg.location
+  kind                = "FunctionApp"
+  # Linux Consumption App Service Plan
+  sku {
+    tier = "Dynamic"
+    size = "Y1"
+  }
+  tags = local.tags
 }
 
 # Function App Archived
@@ -132,17 +96,25 @@ data "archive_file" "faa" {
   output_path = "./deploy/fad.zip"
 }
 
+resource "azurerm_application_insights" "application_insights" {
+  name                = local.apins_name
+  location            = data.azurerm_resource_group.rg.location
+  resource_group_name = data.azurerm_resource_group.rg.name
+  application_type    = "other"
+}
+
 # Deploye Function App 
 resource "azurerm_function_app" "fa" {
-  name                       = local.fa_name
-  resource_group_name        = data.azurerm_resource_group.rg.name
-  location                   = data.azurerm_resource_group.rg.location
-  app_service_plan_id        = azurerm_app_service_plan.asp.id
+  name                = local.fa_name
+  resource_group_name = data.azurerm_resource_group.rg.name
+  location            = data.azurerm_resource_group.rg.location
+  app_service_plan_id = azurerm_app_service_plan.asp.id
   app_settings = {
     "WEBSITE_RUN_FROM_PACKAGE"    = "1",
-    "FUNCTIONS_WORKER_RUNTIME" = "dotnet",
+    "FUNCTIONS_WORKER_RUNTIME"    = "dotnet",
     "AzureWebJobsDisableHomepage" = "true",
-    "SA_NAME" = local.sa_name
+    "SA_NAME"                     = local.sa_name,
+    "APPINSIGHTS_INSTRUMENTATIONKEY" = azurerm_application_insights.application_insights.instrumentation_key
   }
   storage_account_name       = data.azurerm_storage_account.sa.name
   storage_account_access_key = data.azurerm_storage_account.sa.primary_access_key
@@ -180,7 +152,7 @@ locals {
 }
 
 # Publish Function App
- resource "null_resource" "fa_publish" {
+resource "null_resource" "fa_pub" {
   provisioner "local-exec" {
     command = local.publish_code_command
   }
@@ -188,7 +160,7 @@ locals {
     local.publish_code_command
   ]
   triggers = {
-    input_json = filemd5("./deploy/fad.zip")
+    input_json           = filemd5("./deploy/fad.zip")
     publish_code_command = local.publish_code_command
   }
 }

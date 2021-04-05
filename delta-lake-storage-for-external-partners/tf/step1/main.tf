@@ -50,23 +50,32 @@ resource "azurerm_storage_account" "sa" {
   tags = local.tags
 }
 
-# Archive Container
-resource "azurerm_storage_container" "sac2" {
-  name                  = "archive"
-  storage_account_name  = azurerm_storage_account.sa.name
-  container_access_type = "private"
-}
-
-# Back-End Interface container
-resource "azurerm_storage_container" "sac3" {
-  name                  = "ingest"
-  storage_account_name  = azurerm_storage_account.sa.name
-  container_access_type = "private"
-}
-
 # Assigning TerraformPrincipal as Storage Blob Data Contributor to the Storage Account
 resource "azurerm_role_assignment" "ara_tsp" {
   scope                = azurerm_storage_account.sa.id
   role_definition_name = "Storage Blob Data Contributor"
   principal_id         = data.azuread_service_principal.tsp.object_id
 }
+
+# Archive Container
+resource "azurerm_storage_container" "sac1" {
+  name                  = "archive"
+  storage_account_name  = azurerm_storage_account.sa.name
+  container_access_type = "private"
+
+  depends_on = [
+    azurerm_role_assignment.ara_tsp
+  ]
+}
+
+# Back-End Interface container
+resource "azurerm_storage_container" "sac2" {
+  name                  = "ingest"
+  storage_account_name  = azurerm_storage_account.sa.name
+  container_access_type = "private"
+
+  depends_on = [
+    azurerm_role_assignment.ara_tsp
+  ]
+}
+

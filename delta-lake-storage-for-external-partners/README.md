@@ -1,6 +1,6 @@
 # Solution Building Block (SBB): Enable secure data ingestion gateway capability for the External Parties (Customers)
 
-NOTE. Read conclusion before concidering to use this solution out-of-box in production.
+> The work on this solution is still in progress
 
 ## Part 1. Definition
 
@@ -156,6 +156,7 @@ To be continued...
 
 * Mention large files processng by Function App, add garbage collector screenshots
 * Add conclusion (mention shared service plan used in DEV Env)
+* TerraformPrinciple account security review
 
 ### References
 

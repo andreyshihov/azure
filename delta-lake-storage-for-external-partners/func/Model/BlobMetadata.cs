@@ -1,6 +1,6 @@
 using System.Text.Json;
 
-namespace func
+namespace func.Model
 {
     internal class BlobMetadata
     {

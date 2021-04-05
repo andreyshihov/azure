@@ -3,13 +3,14 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using Azure.Storage.Blobs;
 using Azure;
-using func;
+using func.Model;
 using System;
 using Azure.Identity;
+using func;
 
-public partial class IncomingFiles
+public class QueueDelete
 {
-    [FunctionName("Delete")]
+    [FunctionName("QueueDelete")]
     public static async Task Run(
                 [QueueTrigger("delete")] string myQueueItem,
                 ILogger log)
@@ -17,14 +18,13 @@ public partial class IncomingFiles
         log.LogInformation($"Delete queue process item: {myQueueItem}");
 
         BlobMetadata blobMetadata = BlobMetadata.Parse(myQueueItem);
-        string containerEndpoint = string.Format("https://{0}.blob.core.windows.net/", Common.GetEnvironmentVariable("SA_NAME"));
-        BlobServiceClient blobServiceClient = new BlobServiceClient(new Uri(containerEndpoint), new DefaultAzureCredential());
+        string containerEndpoint = string.Format("https://{0}.blob.core.windows.net/{1}", Common.GetEnvironmentVariable("SA_NAME"), blobMetadata.ContainerName);
 
-        // formatting new blob path and name
+        // Formatting new blob path and name.
         var blobPathAndName = $"{blobMetadata.BlobPath}/{blobMetadata.BlobName}";
 
-        // Get a credential and create a client object for the blob container.
-        var sourceBlobContainerClient = blobServiceClient.GetBlobContainerClient(blobMetadata.ContainerName);
+        // Get blob client
+        BlobContainerClient sourceBlobContainerClient = new BlobContainerClient(new Uri(containerEndpoint), new DefaultAzureCredential());
 
         try
         {

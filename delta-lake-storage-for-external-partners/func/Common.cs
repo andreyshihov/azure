@@ -1,3 +1,4 @@
+using Microsoft.Win32.SafeHandles;
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -5,6 +6,10 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage.Queue;
 using Azure.Storage.Blobs;
+using Azure.Storage.Files.DataLake;
+using func.Model;
+using Azure.Identity;
+using Azure;
 
 namespace func
 {
@@ -53,6 +58,33 @@ namespace func
         public static string GetEnvironmentVariable(string name)
         {
             return Environment.GetEnvironmentVariable(name, EnvironmentVariableTarget.Process);
+        }
+
+        public static async Task InitContainer(string container, Stream initBlob, ILogger log)
+        {
+            log.LogInformation($"Start to init container: {container}");
+
+            string serviceEndpoint = string.Format("https://{0}.blob.core.windows.net/", Common.GetEnvironmentVariable("SA_NAME"));
+
+            try
+            {
+                using (var sr = new StreamReader(initBlob))
+                {
+                    var initContainer = func.Model.InitContainer.Parse(sr.ReadToEnd());
+                    foreach (var directory in initContainer.Directories)
+                    {
+                        DataLakeServiceClient dataLakeServiceClient = new DataLakeServiceClient(new Uri(serviceEndpoint), new DefaultAzureCredential());
+                        DataLakeFileSystemClient dataLakeFileSystemClient = dataLakeServiceClient.GetFileSystemClient(container);
+                        DataLakeDirectoryClient dataLakeDirectoryClient = dataLakeFileSystemClient.GetDirectoryClient(directory);
+                        await dataLakeDirectoryClient.CreateIfNotExistsAsync();
+                    }
+                }
+            }
+            catch (RequestFailedException)
+            {
+                log.LogInformation($"Failed to complete container initialisation operation: {container}");
+                throw;
+            }
         }
     }
 }

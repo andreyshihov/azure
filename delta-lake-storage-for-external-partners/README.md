@@ -160,10 +160,12 @@ When running powershell scripts, regardless of workspace (local machine, CI/CD p
 
 ### Infrastructure Plane
 
+> **Work in progress...**
 
+Notes:
 
-> * Add conclusion (mention shared service plan used in DEV Env)
-> * TerraformPrinciple account security review
+* Add conclusion (mention shared service plan used in DEV Env)
+* TerraformPrinciple account security review
 
 ## Known issues
 

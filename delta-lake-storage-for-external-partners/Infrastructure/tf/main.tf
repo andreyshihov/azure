@@ -75,7 +75,6 @@ resource "azurerm_storage_container" "carch" {
   name                  = "archive"
   storage_account_name  = azurerm_storage_account.sa.name
   container_access_type = "private"
-
   depends_on = [
     azurerm_role_assignment.ara_tsp
   ]
@@ -162,7 +161,7 @@ resource "azurerm_function_app" "infr_fa" {
 ##################################################################################
 // https://docs.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#storage-blob-data-reader
 // Read, write, and delete Azure Storage containers and blobs.
-resource "azurerm_role_assignment" "functionToStorage1" {
+resource "azurerm_role_assignment" "ara_infr_stor" {
   scope                = azurerm_storage_account.sa.id
   role_definition_name = "Storage Blob Data Contributor"
   principal_id         = azurerm_function_app.infr_fa.identity[0].principal_id
@@ -170,10 +169,58 @@ resource "azurerm_role_assignment" "functionToStorage1" {
 
 // https://docs.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#storage-queue-data-contributor
 // Read, write, and delete Azure Storage queues and queue messages.
-resource "azurerm_role_assignment" "functionToStorage2" {
+resource "azurerm_role_assignment" "ara_infr_queue" {
   scope                = azurerm_storage_account.sa.id
   role_definition_name = "Storage Queue Data Contributor"
   principal_id         = azurerm_function_app.infr_fa.identity[0].principal_id
+}
+
+##################################################################################
+# RESOURCES - Resources for Function App
+# NOTE - Free App Service Plan used below isn't suitable for production env.
+##################################################################################
+# Function App
+resource "azurerm_function_app" "conf_fa" {
+  name                = local.conf_fa_name
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
+  app_service_plan_id = azurerm_app_service_plan.asp.id
+  app_settings = {
+    "WEBSITE_RUN_FROM_PACKAGE"    = "1",
+    "FUNCTIONS_WORKER_RUNTIME"    = "dotnet",
+    "AzureWebJobsDisableHomepage" = "true",
+    "SA_NAME"                     = local.sa_name,
+    "APPINSIGHTS_INSTRUMENTATIONKEY" = azurerm_application_insights.app_insights.instrumentation_key,
+    "SCM_DO_BUILD_DURING_DEPLOYMENT" = "false"
+  }
+  storage_account_name       = azurerm_storage_account.sa.name
+  storage_account_access_key = azurerm_storage_account.sa.primary_access_key
+  version                    = "~3"
+  
+  identity {
+    type = "SystemAssigned"
+  }
+  
+  tags = local.tags
+}
+
+##################################################################################
+# RESOURCES - Fuction App Role Assignments
+##################################################################################
+// https://docs.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#storage-blob-data-reader
+// Read, write, and delete Azure Storage containers and blobs.
+resource "azurerm_role_assignment" "ara_conf_stor" {
+  scope                = azurerm_storage_account.sa.id
+  role_definition_name = "Storage Blob Data Contributor"
+  principal_id         = azurerm_function_app.conf_fa.identity[0].principal_id
+}
+
+// https://docs.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#storage-queue-data-contributor
+// Read, write, and delete Azure Storage queues and queue messages.
+resource "azurerm_role_assignment" "ara_conf_queue" {
+  scope                = azurerm_storage_account.sa.id
+  role_definition_name = "Storage Queue Data Contributor"
+  principal_id         = azurerm_function_app.conf_fa.identity[0].principal_id
 }
 
 ##################################################################################

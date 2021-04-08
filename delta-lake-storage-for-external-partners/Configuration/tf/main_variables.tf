@@ -40,7 +40,7 @@ variable "infr_fa_version" {
 variable "conf_fa_version" {
   description = "Version of the Infrastructure Function App."
   type        = string
-  default     = "0.0.4"
+  default     = "0.0.5"
 }
 
 variable "location" {

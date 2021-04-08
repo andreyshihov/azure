@@ -18,7 +18,7 @@ The interface of the system implemented using defined directories structure in D
 
 ### External Party's interface (Front-End)
 
-External Parties (EP) accessing Azure Data Lake using Azure Storage Explorer that provides access to EP's Home Directory. Home Directory contains specially defined directories allowing users to interact.
+External Parties (EP) accessing Azure Data Lake using Azure Storage Explorer that provides access to EP's Home Container. Home Container contains specially defined directories allowing users to interact.
 
 ### System's interface (Back-End)
 
@@ -28,14 +28,14 @@ System responsible for data ingest, e.g. Azure Data Factory (ADF), regularly sca
 
 EPs' uploaded files should be renamed following defined naming convention. This naming convention should:
 
-* guarantee unique files' naming in the organisation's global namespace
+* guarantee unique file naming in the organisation's global namespace
 * contain meta-information allowing ADF map new data to the relevant EPs in the internal data stores
 
 ## Detailed Interface Definition
 
 ### Front-End Interface
 
-After successful EP's authentication, its Home Directory container contains following directories
+After successful EP's authentication, its Home Container contains following directories
 
 * Incoming - drop-off zone for the new data files
 * Report - Human readable data ingest results report for each data file
@@ -46,7 +46,7 @@ After successful EP's authentication, its Home Directory container contains foll
 
 Following containers defining Back-End interface
 
-* Ingest - contains data files ready to be processed by data ingestion system
+* Ingest - contains data files ready to be processed by data ingestion system e.g. ADF
 * Archive - contains original EPs files for audit purposes
 
 ## Solution's Scope
@@ -57,7 +57,7 @@ This SBB focuses on deploying Azure cloud-native infrastructure capability allow
 
 * Using Terraform capabilities
 
-  * Deploy Azure Data Lake
+  * Deploy Azure Data Lake, Application Service Plan, Function Apps, Security Groups Assignments, etc
   * Deploy secure *Service* Containers to be used by data transformation and ingestion tools e.g. Azure Data Factory. This is implementation of the Back-End interface
   * Deploy Security Groups for each EP based on the deployment environment e.g. do not deploy PROD Security Groups in DEV environment
   * Deploy secure *EPs'* Containers that can only be accessed by the members of specifically deployed Security Group (created earlier). This is implementation of the Front-End interface
@@ -66,9 +66,6 @@ This SBB focuses on deploying Azure cloud-native infrastructure capability allow
 
   * Ensure newly uploaded files renamed to contain appropriate meta-data in the file name and uniquely identifiable
   * Ensure newly uploaded files moved into appropriate location for further processing by data ingestion systems (Back-End interface) and archiving
-
-* Using PowerShell capabilities (Terraform embedded idempotent script)
-
   * Ensure *EPs'* Containers include required directories implementing Front-End interface
 
 ### It expected NOT to do
@@ -79,25 +76,33 @@ This SBB focuses on deploying Azure cloud-native infrastructure capability allow
 
 ## What this solution CAN and CAN'T do (room for improvement)
 
-This solution will not be tested to process large files. This solution should be concidered as a prototype and proof-of-concept.
+This solution will not be tested to process large files. This solution should be concidered as a prototype and proof-of-concept. Deciding to use it in production environment is at your own risk.
 
 ### It can
 
 * Deploy new Security Group for each EP. (Note *prevent_duplicate_names = true*)
 * Deploy new tagged Resource Group
 * Deploy new tagged Storage Account with enabled Hierarchical Name Space (Data Lake Store)
-* Accept parameters for the deployment environment e.g. DEV, TEST, PROD
-* Move originally uploaded EPs' files into Archive Container with *Archive access tier* enabled
+* Deploy App Insights to analyze Function App activities
+* Handle environment specific Terraform.tfvars files to support various deployment environment e.g. DEV, TEST, PROD
+* Move originally uploaded EPs' files into Archive Container with *Archive access tier* enabled (not implemented yet)
 * Move originally uploaded EPs' files into Ingest Container and rename them following appropriate naming convention defined by an interface (see above)
 
 ### It can't
 
-* Use existing Security Groups. Use *terraform import* to converge states or change *resource* blocks to *data* blocks for Security Groups deployment
+* Use existing Security Groups. As a workaround, use *terraform import* to converge states or change *resource* blocks to *data* blocks for Security Groups deployment
 * Create new B2B Guest Users and add them to the Security Groups. This option is currently [unavailable](https://github.com/hashicorp/terraform-provider-azuread/issues/41) in Terraform
 * Purging old files after expiration of the retention period
-* Function App can't log its activity. To enable Logging, consider setting up Application Insigts Azure Service and assosiating it with this Function App
 
 ## Debatable decisions
+
+### IaC and CaC
+
+This SBB logically separates Infrastructure Plane from Configuration Plane. The idea is to get all nessessary Infrastructure components to be deployed and maintained in Infrastructure Plane and Configuration Components to be deployed and maintained in Configuration Plane. Commands from Configuration Plane to Infrastructure Plane issued via Queue.
+
+**Infrastructure Plane** suppose to ensure that all nesessary resources are available and frequent change to these resources is not expected.
+
+**Configuration Plane** suppose to easier adapt to the standard change. The standard change is adding and removing new EP profiles in configuration file and Function App, then running terraform apply to deploy/remove Containers, Security Groups and Function Apps. It is designed to be smaller resposibility scope and easier to maintain.
 
 ### Data Lake Gen 2 vs Blob Storage
 
@@ -111,6 +116,7 @@ By design, it's a set of capabilities dedicated to data analytics | .
 Various file formats suitable for ADF and HDInsights | .
 Hierarchical namespace support | .
 A superset of POSIX permissions support | .
+Front-End interface is suitable for the automated integration | .
 
 #### Azure Blog Storage Pros and Cons
 
@@ -137,7 +143,7 @@ To reduce potential security vulnerability surface, Archive and Log catalogs cou
 
 ### In-process vs Out-of-process (Isolated) Function App
 
-This solution uses In-process Function App Implementation which impose some fine-tune disadvantages. It is possible to implement it in Isolated process but potentially requires more coding as some features like Imperative Binding aren't available in Isolated mode. To get to know pros/cons and limitations of both modes read [Guide for running functions on .NET 5.0 in Azure](https://docs.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-process-guide#differences-with-net-class-library-functions)
+This solution uses In-process Function App Implementation which imposes some fine-tune disadvantages. It is possible to implement it in Isolated process but potentially requires more coding as some features like Imperative Binding aren't available in Isolated mode. To get to know pros/cons and limitations of both modes read [Guide for running functions on .NET 5.0 in Azure](https://docs.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-process-guide#differences-with-net-class-library-functions)
 
 ## Workspace
 
@@ -154,23 +160,24 @@ When running powershell scripts, regardless of workspace (local machine, CI/CD p
 
 To be continued...
 
-* Mention large files processng by Function App, add garbage collector screenshots
 * Add conclusion (mention shared service plan used in DEV Env)
 * TerraformPrinciple account security review
+
+## Known issues
+
+* First time terraform scripts application might lead to Function App deployment hanging up in "Still creating..." state for the long time. Workaround: run _terraform apply_ command again.
+
+Picture 1. Known issue 1.
+![Known issue 1](./img/known_issue_2.PNG)
+
+Picture 2. Known issue 1.
+![Known issue 1](./img/fapp_init_failure.PNG)
 
 ### References
 
 [Use PowerShell to manage directories and files in Azure Data Lake Storage Gen2](https://docs.microsoft.com/en-us/azure/storage/blobs/data-lake-storage-directory-file-acl-powershell)
 
-[Run PowerShell from Terraform](https://markgossa.blogspot.com/2019/04/run-powershell-from-terraform.html)
-
 [Azure Blob storage trigger for Azure Functions](https://docs.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-trigger?tabs=csharp#poison-blobs)
-
-[Deploying an Azure Function App with Terraform](https://adrianhall.github.io/typescript/2019/10/23/terraform-functions/) - deployment with Azure Functions Core Tools
-
-[Publish Azure Functions code with Terraform](https://www.maxivanov.io/publish-azure-functions-code-with-terraform/) - deployment from the storage account with terraform
-
-[Deploy Azure Functions with Terraform](https://www.maxivanov.io/deploy-azure-functions-with-terraform/) - deployment from the storage account with terraform
 
 [Using Managed Identity between Azure Functions and Azure Storage](https://docs.microsoft.com/en-us/samples/azure-samples/functions-storage-managed-identity/using-managed-identity-between-azure-functions-and-azure-storage/)
 

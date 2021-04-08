@@ -1,6 +1,6 @@
 # Solution Building Block (SBB): Enable secure data ingestion gateway capability for the External Parties (Customers)
 
-> The work on this solution is still in progress
+> The work on Solution Definition (README) file is still in progress but the prototype is fully working. Clone repository then deploy first Infrastructure and then Configuration resources
 
 ## Part 1. Definition
 
@@ -158,10 +158,12 @@ When running powershell scripts, regardless of workspace (local machine, CI/CD p
 
 ## Part 2. Implementation
 
-To be continued...
+### Infrastructure Plane
 
-* Add conclusion (mention shared service plan used in DEV Env)
-* TerraformPrinciple account security review
+
+
+> * Add conclusion (mention shared service plan used in DEV Env)
+> * TerraformPrinciple account security review
 
 ## Known issues
 

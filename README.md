@@ -1,4 +1,4 @@
-# Cloud-native or hybrid Azure solutions repository
+# Cloud-native and hybrid Azure solutions repository
 
 ## Content
 

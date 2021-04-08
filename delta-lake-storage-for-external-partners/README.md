@@ -168,9 +168,11 @@ To be continued...
 * First time terraform scripts application might lead to Function App deployment hanging up in "Still creating..." state for the long time. Workaround: run _terraform apply_ command again.
 
 Picture 1. Known issue 1.
+
 ![Known issue 1](./img/known_issue_2.PNG)
 
 Picture 2. Known issue 1.
+
 ![Known issue 1](./img/fapp_init_failure.PNG)
 
 ### References

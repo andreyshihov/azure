@@ -180,17 +180,40 @@ Infrastructure plane takes care of the resources nesessary for the solution to r
 
 Note that new EP's container get created in _Configuration Plane_. Once container has been created, Configuration Plane produces Command Message to Infrastructure Plane via Queue to initialise newly created container. Delete Command Messages are also produced in Configuration Plane and executed in Infrastructure Plane.
 
+### Resource Group
+
+Group and Resources
+![Resources](./img/resource_group.PNG)
+
+* ext-gtw-dev-apins - Application Insights Resource allows to monitor and troubleshoot Function Apps
+* ext-gtw-dev-conf-fa - Function App Resource where Configuration Plane Function Apps get deployed
+* ext-gtw-dev-infr-fa - Function App Resource where Infrastructure Plane Function Apps get deployed
+* ext-gtw-dev-plan - Application Service Plan for both Function Apps
+* lrsbronzedev - Data Lake Gen 2 Storage Account to securely store EPs blob data. (_The name should be changed to follow solution's naming convention in the next improvement round_)
+
+### Storage Account
+
+Storage Account and containers
+
+![Containers](./img/containers.PNG)
+
 ## Known issues
+
+### Known issue #1
 
 * First time terraform scripts application might lead to Function App deployment hanging up in "Still creating..." state for the long time. Workaround: run _terraform apply_ command again.
 
-Picture 1. Known issue 1.
+Known issue #1 - Terraform Deployment Terminal View
 
 ![Known issue 1](./img/known_issue_2.PNG)
 
-Picture 2. Known issue 1.
+Known issue #1 - Function App deployment Portal View
 
 ![Known issue 1](./img/fapp_init_failure.PNG)
+
+### Known issue #2
+
+The name of the Storage Account doesn't follow common for this solution naming convention.
 
 ## Conclusion
 

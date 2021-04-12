@@ -1,6 +1,6 @@
 # Solution Building Block (SBB): Enable secure data ingestion gateway capability for the External Parties (Customers)
 
-> The work on Solution Definition (README) file is still in progress but the prototype is fully working. Clone repository then deploy first Infrastructure and then Configuration resources
+> The work on the Solution Definition (README) file is still in progress, but the prototype is fully working. Clone repository, then deploy Infrastructure first and Configuration resources last
 
 ## Part 1. Definition
 
@@ -160,12 +160,25 @@ When running powershell scripts, regardless of workspace (local machine, CI/CD p
 
 ### Infrastructure Plane
 
-> **Work in progress...**
+Infrastructure plane takes care of the resources nesessary for the solution to run. It is expected that changes in this plane aren't happening frequently. If change has happend, it will impact entire solution and Accounts of all EPs, therefore if it hasn't been thoroughly tested and introduced some issues in the production environment - access to EPs' accounts, Front and Back-End interfaces might be fully or partially broken.
 
-Notes:
+#### Resources managed under Infrastructure Plane (Using Terraform capabilities)
 
-* Add conclusion (mention shared service plan used in DEV Env)
-* TerraformPrinciple account security review
+* Resourse Group
+* Storage Account (Delta Lake Gen 2)
+* Terraform Service Principal role assignment (RBAC) to Storage Account for containers management. Note, Terraform Service Principle resource is not included in the Infrastructure Plane (Terraform). This is left for the next round of Improvements of this solution
+* Archive, Ingest and Service containers underpinning interfaces and basic capabilities
+* Applicaion Service Plan to rund and Application Insights to monitor Function Apps
+* Function App resources and role assignments (RBAC) to get access to the Storage Account for _Infrastructure Plane_
+* Function App resources and role assignments (RBAC) to get access to the Storage Account for the _Configuration Plane_. Not actual Function Apps, only resources nesessary to run Function Apps
+* Publish, compression and deployment of the **packaged** (zip) Function App using "_local-exec_" provisioner "_null_resource_" Terraform capability
+
+#### Logic managed under Infrasturcture Plane (Using Function App capabilities)
+
+* Delete the Blobs from the EPs Incoming directory once it's been copied in the Ingress container
+* Create necessary directories (Incoming, Ok, Fail, Report) in the new EPs container
+
+Note that new EP's container get created in _Configuration Plane_. Once container has been created, Configuration Plane produces Command Message to Infrastructure Plane via Queue to initialise newly created container. Delete Command Messages are also produced in Configuration Plane and executed in Infrastructure Plane.
 
 ## Known issues
 
@@ -178,6 +191,10 @@ Picture 1. Known issue 1.
 Picture 2. Known issue 1.
 
 ![Known issue 1](./img/fapp_init_failure.PNG)
+
+## Conclusion
+
+_To be added soon_
 
 ### References
 

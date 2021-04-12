@@ -109,7 +109,9 @@ resource "azurerm_storage_container" "csrv" {
 ##################################################################################
 # RESOURCES - Resources for Function App
 # NOTE - Free App Service Plan used below isn't suitable for production env.
+# TODO - improve App Service Plan configuration for production environment
 ##################################################################################
+# App Service Plan for all Function Apps
 resource "azurerm_app_service_plan" "asp" {
   name                = local.asp_name
   resource_group_name = azurerm_resource_group.rg.name
@@ -123,7 +125,7 @@ resource "azurerm_app_service_plan" "asp" {
   tags = local.tags
 }
 
-# Application Insights
+# Application Insights for all Function Apps
 resource "azurerm_application_insights" "app_insights" {
   name                = local.apins_name
   location            = azurerm_resource_group.rg.location
@@ -131,7 +133,7 @@ resource "azurerm_application_insights" "app_insights" {
   application_type    = "other"
 }
 
-# Function App
+# Function App for Infrastructure functions
 resource "azurerm_function_app" "infr_fa" {
   name                = local.infr_fa_name
   resource_group_name = azurerm_resource_group.rg.name

@@ -186,16 +186,22 @@ Group and Resources
 ![Resources](./img/resource_group.PNG)
 
 * ext-gtw-dev-apins - Application Insights Resource allows to monitor and troubleshoot Function Apps
-* ext-gtw-dev-conf-fa - Function App Resource where Configuration Plane Function Apps get deployed
-* ext-gtw-dev-infr-fa - Function App Resource where Infrastructure Plane Function Apps get deployed
+* ext-gtw-dev-conf-fa - Function App Resource where _Configuration Plane_ Function Apps get deployed
+* ext-gtw-dev-infr-fa - Function App Resource where _Infrastructure Plane_ Function Apps get deployed
 * ext-gtw-dev-plan - Application Service Plan for both Function Apps
 * lrsbronzedev - Data Lake Gen 2 Storage Account to securely store EPs blob data. (_The name should be changed to follow solution's naming convention in the next improvement round_)
 
 ### Storage Account
 
-Storage Account and containers
+Storage Account and Containers
 
 ![Containers](./img/containers.PNG)
+
+* **Archive** private Container stores EPs original files (blobs). Before blob can be submitted for ingestion (moved into Ingest Container), its original copy will be saved in the Archive Container for Audit capability
+* **Ingest** private Container store prepared blobs that are ready to be ingested
+* **Sevice** private Container store service blobs nesessary for solution to operate
+* **$logs, azure-webjobs-hosts, azure-webjobs-secrets** private Containers used by Azure Function Apps platform
+* **874e4c60, d7339ff0** private Containers for Test EPs to be used in other than PROD environments
 
 ## Known issues
 

@@ -64,8 +64,8 @@ This SBB focuses on deploying Azure cloud-native infrastructure capability allow
 
 * Using Azure Functions Apps capabilities
 
-  * Ensure newly uploaded files renamed to contain appropriate meta-data in the file name and uniquely identifiable
-  * Ensure newly uploaded files moved into appropriate location for further processing by data ingestion systems (Back-End interface) and archiving
+  * Ensure newly uploaded blobs renamed to contain appropriate meta-data in its name following \<EpId>.<8 random aplhanumeric characters>.\<Name or the originally received file> naming convention
+  * Ensure newly uploaded blobs moved into appropriate location for further processing by data ingestion systems (Back-End interface) and archiving
   * Ensure *EPs'* Containers include required directories implementing Front-End interface
 
 ### It expected NOT to do
@@ -167,7 +167,7 @@ Infrastructure plane takes care of the resources nesessary for the solution to r
 * Resourse Group
 * Storage Account (Delta Lake Gen 2)
 * Terraform Service Principal role assignment (RBAC) to Storage Account for containers management. Note, Terraform Service Principle resource is not included in the Infrastructure Plane (Terraform). This is left for the next round of Improvements of this solution
-* Archive, Ingest and Service containers underpinning interfaces and basic capabilities
+* Archive, Ingest and Service containers underpinning interfaces and basic solution's capabilities
 * Applicaion Service Plan to rund and Application Insights to monitor Function Apps
 * Function App resources and role assignments (RBAC) to get access to the Storage Account for _Infrastructure Plane_
 * Function App resources and role assignments (RBAC) to get access to the Storage Account for the _Configuration Plane_. Not actual Function Apps, only resources nesessary to run Function Apps
@@ -203,6 +203,24 @@ Storage Account and Containers
 * **$logs, azure-webjobs-hosts, azure-webjobs-secrets** private Containers used by Azure Function Apps platform
 * **874e4c60, d7339ff0** private Containers for Test EPs to be used in other than PROD environments
 
+#### Archive Container
+
+Archive Container stores EPs' files (blobs) with exact content and slightly modified blob name to guarantee uniqueness in the Organisation's global namespace.
+
+![Archive container](./img/archive_container.PNG)
+
+#### Ingest Container
+
+Ingest Container implements Back-End interfaces and plays the role of a gateway for the Internal Systems (e.g. Azure Data Factory) to access EPs data from a single location. The content of the files is unmodified, that is - it's exactly as has been received from the EPs. The name of the files has been modified following naming convention of this solution mentioned in the earlier parts.
+
+![Ingest container](./img/ingest_container.PNG)
+
+#### Service Container
+
+Service Container is used for this solution's service needs. Now it used to trigger EPs container initialisation Function App. This Function App will be covered in details in the Configuraion Plane description.
+
+![Service container](./img/service_container.PNG)
+
 ## Known issues
 
 ### Known issue #1
@@ -219,7 +237,11 @@ Known issue #1 - Function App deployment Portal View
 
 ### Known issue #2
 
-The name of the Storage Account doesn't follow common for this solution naming convention.
+The name of the Storage Account doesn't follow common for this solution naming convention. This should be fixed in the next Improvement round.
+
+### Known issue #3
+
+Access tier of the blobs in Archive Container is not set to _Archive_. This should be fixed in the next Improvement round.
 
 ## Conclusion
 

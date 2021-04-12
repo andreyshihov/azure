@@ -211,13 +211,13 @@ Archive Container stores EPs' files (blobs) with exact content and slightly modi
 
 #### Ingest Container
 
-Ingest Container implements Back-End interfaces and plays the role of a gateway for the Internal Systems (e.g. Azure Data Factory) to access EPs data from a single location. The content of the files is unmodified, that is - it's exactly as has been received from the EPs. The name of the files has been modified following naming convention of this solution mentioned in the earlier parts.
+Ingest Container implements Back-End interfaces and plays the role of a gateway for the Oranisation's Internal Systems (e.g. Azure Data Factory) to access EPs data from a single location. The content of the files is unmodified, that is - it's exactly as it has been received from the EPs. The name of the files has been modified following solution's naming convention mentioned in the earlier parts.
 
 ![Ingest container](./img/ingest_container.PNG)
 
 #### Service Container
 
-Service Container is used for this solution's service needs. Now it used to trigger EPs container initialisation Function App. This Function App will be covered in details in the Configuraion Plane description.
+Service Container stores utility files to support basic solution's logic. Now it used to trigger EPs Container initialisation Function App. The details of this Function App will be covered in the description of the Configuraion Plane.
 
 ![Service container](./img/service_container.PNG)
 
@@ -225,7 +225,7 @@ Service Container is used for this solution's service needs. Now it used to trig
 
 ### Known issue #1
 
-* First time terraform scripts application might lead to Function App deployment hanging up in "Still creating..." state for the long time. Workaround: run _terraform apply_ command again.
+* First time application of the Terraform scripts might lead to a Function App deployment hanging up in a "Still creating..." state for a long time. Workaround: run _terraform apply_ command again.
 
 Known issue #1 - Terraform Deployment Terminal View
 

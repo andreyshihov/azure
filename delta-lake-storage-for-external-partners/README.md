@@ -168,7 +168,7 @@ Infrastructure plane takes care of the resources nesessary for the solution to r
 * Storage Account (Delta Lake Gen 2)
 * Terraform Service Principal role assignment (RBAC) to Storage Account for containers management. Note, Terraform Service Principle resource is not included in the Infrastructure Plane (Terraform). This is left for the next round of Improvements of this solution
 * Archive, Ingest and Service containers underpinning interfaces and basic solution's capabilities
-* Applicaion Service Plan to rund and Application Insights to monitor Function Apps
+* Applicaion Service Plan to run, and Application Insights to monitor solution's Function Apps
 * Function App resources and role assignments (RBAC) to get access to the Storage Account for _Infrastructure Plane_
 * Function App resources and role assignments (RBAC) to get access to the Storage Account for the _Configuration Plane_. Not actual Function Apps, only resources nesessary to run Function Apps
 * Publish, compression and deployment of the **packaged** (zip) Function App using "_local-exec_" provisioner "_null_resource_" Terraform capability
@@ -178,7 +178,7 @@ Infrastructure plane takes care of the resources nesessary for the solution to r
 * Delete the Blobs from the EPs Incoming directory once it's been copied in the Ingress container
 * Create necessary directories (Incoming, Ok, Fail, Report) in the new EPs container
 
-Note that new EP's container get created in _Configuration Plane_. Once container has been created, Configuration Plane produces Command Message to Infrastructure Plane via Queue to initialise newly created container. Delete Command Messages are also produced in Configuration Plane and executed in Infrastructure Plane.
+Note that new EP's Container get created in _Configuration Plane_. Once Container has been created, Configuration Plane produces special Command Message and adds it into a Queue. Later this message will be consumed by a Function App in the Infrastructure Plane which will complete initialisation of the newly created Container. Delete Command Messages are also produced in Configuration Plane, and completed by Infrastructure Plane's Funcion Apps.
 
 ### Resource Group
 
@@ -220,6 +220,14 @@ Ingest Container implements Back-End interfaces and plays the role of a gateway 
 Service Container stores utility files to support basic solution's logic. Now it used to trigger EPs Container initialisation Function App. The details of this Function App will be covered in the description of the Configuraion Plane.
 
 ![Service container](./img/service_container.PNG)
+
+### Infrastructure Function App
+
+Infrastructure Function App polling _infrastructure_ queue. There are two types of messages that can be consumed by these Function Apps: Initiate Container and Delete Blob. These messages are produced by the Function App from Configuration Plane.
+
+Infrastructure Plane Function App's implementation details can be found in the Source Code located at "./Infrastructure/func/"
+
+![Infrastructure Function Apps](./img/infrastructure_functions.PNG)
 
 ## Known issues
 

@@ -98,7 +98,13 @@ This solution will not be tested to process large files. This solution should be
 
 ### IaC and CaC
 
-This SBB logically separates Infrastructure Plane from Configuration Plane. The idea is to get all nessessary Infrastructure components to be deployed and maintained in Infrastructure Plane and Configuration Components to be deployed and maintained in Configuration Plane. Commands from Configuration Plane to Infrastructure Plane issued via Queue.
+This SBB logically separates Infrastructure Plane from Configuration Plane. The idea is to get all nessessary Infrastructure components to be deployed and maintained in Infrastructure Plane and Configuration Components to be deployed and maintained in Configuration Plane. Commands from Configuration Plane to Infrastructure Plane published via Queue.
+
+This concept brings such benefits as
+
+* Independed Plane deployment improves robustness of the solution
+* Smaller and easier to test release scopes
+* Back-End Interface (Infrastructure Plane) is separated from the Front-End Interface allowing back-end systems to continue their workloads in case of issue in the Configuration Plane
 
 **Infrastructure Plane** suppose to ensure that all nesessary resources are available and frequent change to these resources is not expected.
 
@@ -160,7 +166,11 @@ When running powershell scripts, regardless of workspace (local machine, CI/CD p
 
 ### Infrastructure Plane
 
-Infrastructure plane takes care of the resources nesessary for the solution to run. It is expected that changes in this plane aren't happening frequently. If change has happend, it will impact entire solution and Accounts of all EPs, therefore if it hasn't been thoroughly tested and introduced some issues in the production environment - access to EPs' accounts, Front and Back-End interfaces might be fully or partially broken.
+Infrastructure Plane takes care of the resources nesessary for the solution to run. It is expected that changes in this plane aren't happening frequently. If change has happend, it will impact entire solution and Accounts of all EPs, therefore if it hasn't been thoroughly tested and introduced some issues in the production environment - access to EPs' accounts, Front and Back-End interfaces might be fully or partially broken.
+
+The logical scope of this plane is overall solution's security, infrastructure, basic functionality and Back-End interface.
+
+It's recommended to setup separate CI/CD pipeline for Infrastructure Plane.
 
 #### Resources managed under Infrastructure Plane (Using Terraform capabilities)
 
@@ -221,13 +231,17 @@ Service Container stores utility files to support basic solution's logic. Now it
 
 ![Service container](./img/service_container.PNG)
 
-### Infrastructure Function App
+#### Infrastructure Function App
 
 Infrastructure Function App polling _infrastructure_ queue. There are two types of messages that can be consumed by these Function Apps: Initiate Container and Delete Blob. These messages are produced by the Function App from Configuration Plane.
 
 Infrastructure Plane Function App's implementation details can be found in the Source Code located at "./Infrastructure/func/"
 
 ![Infrastructure Function Apps](./img/infrastructure_functions.PNG)
+
+### Configuration Plane
+
+Configuration Plane takes care of the resources with primary scope on the Front-End interface. The changes in this plane suppose to happen more often, therefore it is recommended to setup separate CI/CD pipeline for it. If change has introduced an issue it can be rolledback separately from Infrastructure Plane.
 
 ## Known issues and further improvements
 
@@ -251,10 +265,6 @@ The name of the Storage Account doesn't follow common for this solution naming c
 ### Access Tier for the Blobs in Archive Container isn't set to _Archive_
 
 Access tier of the blobs in Archive Container is not set to _Archive_. This should be fixed in the next Improvement round.
-
-## Conclusion
-
-_To be added soon_
 
 ### References
 

@@ -75,6 +75,7 @@ resource "azurerm_storage_container" "carch" {
   name                  = "archive"
   storage_account_name  = azurerm_storage_account.sa.name
   container_access_type = "private"
+  
   depends_on = [
     azurerm_role_assignment.ara_tsp
   ]

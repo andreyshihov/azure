@@ -59,6 +59,7 @@ resource "azurerm_storage_container" "sac" {
   name                 = var.accounts[count.index]
   storage_account_name = data.azurerm_storage_account.sa.name
   count                = length(var.accounts)
+  container_access_type = "private"
 }
 
 resource "azurerm_role_assignment" "ra" {

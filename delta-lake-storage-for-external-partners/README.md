@@ -183,7 +183,7 @@ It's recommended to setup separate CI/CD pipeline for Infrastructure Plane.
 * Function App resources and role assignments (RBAC) to get access to the Storage Account for the _Configuration Plane_. Not actual Function Apps, only resources nesessary to run Function Apps
 * Publish, compression and deployment of the **packaged** (zip) Function App using "_local-exec_" provisioner "_null_resource_" Terraform capability
 
-#### Logic managed under Infrasturcture Plane (Using Function App capabilities)
+#### Functionality managed under Infrasturcture Plane (Using Function App capabilities)
 
 * Delete the Blobs from the EPs Incoming directory once it's been copied in the Ingress container
 * Create necessary directories (Incoming, Ok, Fail, Report) in the new EPs container
@@ -227,7 +227,7 @@ Ingest Container implements Back-End interfaces and plays the role of a gateway 
 
 #### Service Container
 
-Service Container stores utility files to support basic solution's logic. Now it used to trigger EPs Container initialisation Function App. The details of this Function App will be covered in the description of the Configuraion Plane.
+Service Container stores utility meta-files to support basic solution's functionality. Now it used to trigger EPs Container initialisation Function App. The details of this Function App will be covered in the description of the Configuraion Plane.
 
 ![Service container](./img/service_container.PNG)
 
@@ -241,7 +241,75 @@ Infrastructure Plane Function App's implementation details can be found in the S
 
 ### Configuration Plane
 
-Configuration Plane takes care of the resources with primary scope on the Front-End interface. The changes in this plane suppose to happen more often, therefore it is recommended to setup separate CI/CD pipeline for it. If change has introduced an issue it can be rolledback separately from Infrastructure Plane.
+Configuration Plane takes care of the resources with primary scope on the Front-End interface. The changes in this plane suppose to happen more often, therefore it is recommended to setup separate CI/CD pipeline for it. If change has introduced an issue it can be rolledback separately, not affecting the Infrastructure Plane.
+
+The logical scope of this plane is the deployment of secure EP Containers and functionality to initialize and process content of these Containers.
+
+This Plane can't be deployed on its own and depends on the resources deployed by the Infrastructure Plane.
+
+#### Resources managed under Configuration Plane (Using Terraform capabilities)
+
+* Azure AD Group for each EP
+* Private Storage Account Container for each EP
+* EP's B2B Guest Account assignment to the Security Group
+* Container initialization meta-blobs for each EP
+* Publish, compression and deployment of the packaged (zip) Function App using "local-exec" provisioner "null_resource" Terraform capability
+
+#### Functionality managed under Configuration Plane (Using Function App capabilities)
+
+* Rename EP files following special naming convention mentioned earlier in this document
+* Copy the Blobs from the EPs Incoming directory to the Archive and Ingress Containers
+* Create necessary directories (Incoming, Ok, Fail, Report) in the new EPs container
+
+#### Azure AD Group for each External Party (EP)
+
+This solution deploys separate Security Group for each External party. This group then get "Storage Blob Data Contributor" role assignment to the Container specifically create for this EP.
+
+![Groups](./img/groups.PNG)
+
+B2B (Guest) Users accounts creation and assignment to the Security Group is out of scope of this prototype solution and should be done manually. This can be potentially resolved in the future improvement rounds.
+
+Assignment example of an External account to the Security Group.
+
+![Partner 1 Group assignment](./img/partner1_group_assignment.PNG)
+
+#### Private Storage Account Container for each EP
+
+Each External Party will have its own, secure Container where they can drop-in their data files. This Container has a number of Directories that help an External Party, manually or automatically, interact with this Gateway solution.
+
+For the detail about each directory read Detailed Front-End Interface Definition above in this document.
+
+External Party's Container view in the Azure Portal
+
+![Partner Containers](./img/partner_containers.PNG)
+
+External Party's Container view in the Azure Storage Explorer
+
+![Partner Containers](./img/front-end_interface.PNG)
+
+External Party's attachment steps to the secure Container.
+
+Step 1.
+
+![Partner Attachment 1](./img/attachment_step_1.PNG)
+
+Step 2.
+
+![Partner Attachment 2](./img/attachment_step_2.PNG)
+
+Step 3.
+
+![Partner Attachment 3](./img/attachment_step_3.PNG)
+
+Step 4.
+
+![Partner Attachment](./img/attachment_step_4.PNG)
+
+#### EP's B2B Guest Account assignment to the Security Group
+
+To establish secure connection with a Container, each External Party's B2B Guest account should be assigned to a dedicated Security Group.
+
+![Partner Group Assignment](./img/partner1_group_assignment.PNG)
 
 ## Known issues and further improvements
 
@@ -250,11 +318,11 @@ Configuration Plane takes care of the resources with primary scope on the Front-
 * First time application of the Terraform scripts might lead to a Function App deployment hanging up in a "Still creating..." state for a long time. This is caused by _local-exec provisioner_ PowerShell script that deploys Function App from packaged (zip) file.
 Workaround: run _terraform apply_ command again.
 
-Known issue #1 - Terraform Deployment Terminal View
+Terraform Deployment Terminal View
 
 ![Packaged deployment via provisioner 1](./img/known_issue_2.PNG)
 
-Known issue #1 - Function App deployment Portal View
+Function App deployment Portal View
 
 ![Packaged deployment via provisioner 1](./img/fapp_init_failure.PNG)
 
@@ -265,6 +333,10 @@ The name of the Storage Account doesn't follow common for this solution naming c
 ### Access Tier for the Blobs in Archive Container isn't set to _Archive_
 
 Access tier of the blobs in Archive Container is not set to _Archive_. This should be fixed in the next Improvement round.
+
+### B2B (Guest) User accounts and Security Group assignments
+
+B2B (Guest) Users accounts creation and assignment to the Security Group potentially can be implemented in the future improvement rounds.
 
 ### References
 

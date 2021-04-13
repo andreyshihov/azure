@@ -229,25 +229,26 @@ Infrastructure Plane Function App's implementation details can be found in the S
 
 ![Infrastructure Function Apps](./img/infrastructure_functions.PNG)
 
-## Known issues
+## Known issues and further improvements
 
-### Known issue #1
+### null_resource, provisioner, local-exec
 
-* First time application of the Terraform scripts might lead to a Function App deployment hanging up in a "Still creating..." state for a long time. Workaround: run _terraform apply_ command again.
+* First time application of the Terraform scripts might lead to a Function App deployment hanging up in a "Still creating..." state for a long time. This is caused by _local-exec provisioner_ PowerShell script that deploys Function App from packaged (zip) file.
+Workaround: run _terraform apply_ command again.
 
 Known issue #1 - Terraform Deployment Terminal View
 
-![Known issue 1](./img/known_issue_2.PNG)
+![Packaged deployment via provisioner 1](./img/known_issue_2.PNG)
 
 Known issue #1 - Function App deployment Portal View
 
-![Known issue 1](./img/fapp_init_failure.PNG)
+![Packaged deployment via provisioner 1](./img/fapp_init_failure.PNG)
 
-### Known issue #2
+### Storage Account name doesn't follow naming convention
 
 The name of the Storage Account doesn't follow common for this solution naming convention. This should be fixed in the next Improvement round.
 
-### Known issue #3
+### Access Tier for the Blobs in Archive Container isn't set to _Archive_
 
 Access tier of the blobs in Archive Container is not set to _Archive_. This should be fixed in the next Improvement round.
 

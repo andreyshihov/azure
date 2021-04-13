@@ -1,6 +1,6 @@
 # Solution Building Block (SBB): Enable secure data ingestion gateway capability for the External Parties (Customers)
 
-> The work on the Solution Definition (README) file is still in progress, but the prototype is fully working. Clone repository, then deploy Infrastructure first and Configuration resources last
+> This solution is a PoC prototype and not recommended to be used in Production Environment. If you decide to use it in Production Environment - you do it at your own risk. Read "Known issues and further improvements" section to get an idea about where this prototype has an improvement potential.
 
 ## Part 1. Definition
 
@@ -149,7 +149,7 @@ To reduce potential security vulnerability surface, Archive and Log catalogs cou
 
 ### In-process vs Out-of-process (Isolated) Function App
 
-This solution uses In-process Function App Implementation which imposes some fine-tune disadvantages. It is possible to implement it in Isolated process but potentially requires more coding as some features like Imperative Binding aren't available in Isolated mode. To get to know pros/cons and limitations of both modes read [Guide for running functions on .NET 5.0 in Azure](https://docs.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-process-guide#differences-with-net-class-library-functions)
+This solution uses In-process Function App Implementation which imposes some fine-tune disadvantages. It is possible to implement it in Isolated process but potentially requires more coding as some features like Imperative Binding aren't available in Isolated mode. To get to know pros/cons and limitations of both modes read [Guide for running functions on .NET 5.0 in Azure](https://docs.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-process-guide#differences-with-net-class-library-functions) 
 
 ## Workspace
 
@@ -172,7 +172,7 @@ The logical scope of this plane is overall solution's security, infrastructure, 
 
 It's recommended to setup separate CI/CD pipeline for Infrastructure Plane.
 
-#### Resources managed under Infrastructure Plane (Using Terraform capabilities)
+#### Resources managed under Infrastructure Plane (using Terraform capabilities)
 
 * Resourse Group
 * Storage Account (Delta Lake Gen 2)
@@ -183,7 +183,7 @@ It's recommended to setup separate CI/CD pipeline for Infrastructure Plane.
 * Function App resources and role assignments (RBAC) to get access to the Storage Account for the _Configuration Plane_. Not actual Function Apps, only resources nesessary to run Function Apps
 * Publish, compression and deployment of the **packaged** (zip) Function App using "_local-exec_" provisioner "_null_resource_" Terraform capability
 
-#### Functionality managed under Infrasturcture Plane (Using Function App capabilities)
+#### Functionality managed under Infrasturcture Plane (using Function App capabilities)
 
 * Delete the Blobs from the EPs Incoming directory once it's been copied in the Ingress container
 * Create necessary directories (Incoming, Ok, Fail, Report) in the new EPs container
@@ -247,7 +247,7 @@ The logical scope of this plane is the deployment of secure EP Containers and fu
 
 This Plane can't be deployed on its own and depends on the resources deployed by the Infrastructure Plane.
 
-#### Resources managed under Configuration Plane (Using Terraform capabilities)
+#### Resources managed under Configuration Plane (using Terraform capabilities)
 
 * Azure AD Group for each EP
 * Private Storage Account Container for each EP
@@ -255,7 +255,7 @@ This Plane can't be deployed on its own and depends on the resources deployed by
 * Container initialization meta-blobs for each EP
 * Publish, compression and deployment of the packaged (zip) Function App using "local-exec" provisioner "null_resource" Terraform capability
 
-#### Functionality managed under Configuration Plane (Using Function App capabilities)
+#### Functionality managed under Configuration Plane (using Function App capabilities)
 
 * Rename EP files following special naming convention mentioned earlier in this document
 * Copy the Blobs from the EPs Incoming directory to the Archive and Ingress Containers
@@ -311,6 +311,27 @@ To establish secure connection with a Container, each External Party's B2B Guest
 
 ![Partner Group Assignment](./img/partner1_group_assignment.PNG)
 
+#### Container initialization meta-blobs for each EP
+
+To implement Front-End interface, Each EP's Container should have apropriate directories defined in detailed Front-End interface. Configuration Plane's Terraform script creates special meta-blobs in _Service_ Container. These meta-blobs will be picked up by a Function App which then will create these directories in the newly created External Party's Container.
+
+The naming convetion for this meta-blobs is <EpId>-init-container.
+
+![Meta-blobs](./img/service_container.PNG)
+
+#### Configuration Function App
+
+Configuration Function App consists of two kinds of functions
+
+* Incoming_\<EpId>
+* Service
+
+**Icoming_\<EpId>** kind of functions polling Incoming directories of each External Party's Container. Their functionality is exactly the same.
+
+To complete basic solution's functionality, such as Container initialization, **Service** kind of functions polling _Service_ Container for the appearance of meta-blobs.
+
+![Configuration functions](./img/configuration_functions.PNG)
+
 ## Known issues and further improvements
 
 ### null_resource, provisioner, local-exec
@@ -337,6 +358,10 @@ Access tier of the blobs in Archive Container is not set to _Archive_. This shou
 ### B2B (Guest) User accounts and Security Group assignments
 
 B2B (Guest) Users accounts creation and assignment to the Security Group potentially can be implemented in the future improvement rounds.
+
+### _Service_ Function App inapropriate location
+
+Service Function App should be moved to Infrastructure Plane.
 
 ### References
 

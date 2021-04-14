@@ -193,7 +193,7 @@ Note that new EP's Container get created in _Configuration Plane_. Once Containe
 ### Resource Group
 
 Group and Resources
-![Resources](./img/resource_group.PNG)
+![Resources](./img/resource_group_v1.PNG)
 
 * ext-gtw-dev-apins - Application Insights Resource allows to monitor and troubleshoot Function Apps
 * ext-gtw-dev-conf-fa - Function App Resource where _Configuration Plane_ Function Apps get deployed
@@ -240,7 +240,7 @@ Infrastructure Function App contains two functions
 
 Infrastructure Plane Function App's implementation details can be found in the Source Code located at "./Infrastructure/func/"
 
-![Infrastructure Function Apps](./img/infrastructure_functions.PNG)
+![Infrastructure Function Apps](./img/infrastructure_functions_v1.PNG)
 
 ### Configuration Plane
 
@@ -288,11 +288,11 @@ External Party's Container view in the Azure Portal
 
 External Party's attached Container view in the Azure Storage Explorer
 
-![Partner Containers](./img/front-end_interface.PNG)
+![Partner Containers](./img/front-end_interface_v1.PNG)
 
 External Party's attachment steps to the secure Container.
 
-Step 1. Select ADLS Gen2 container or directory option.
+Step 1. Select "ADLS Gen2 container or directory" option.
 
 ![Partner Attachment 1](./img/attachment_step_1.PNG)
 
@@ -302,11 +302,11 @@ Step 2.
 
 Step 3.
 
-![Partner Attachment 3](./img/attachment_step_3.PNG)
+![Partner Attachment 3](./img/attachment_step_3_v1.PNG)
 
 Step 4.
 
-![Partner Attachment](./img/attachment_step_4.PNG)
+![Partner Attachment](./img/attachment_step_4_v1.PNG)
 
 #### EP's B2B Guest Account assignment to the Security Group
 
@@ -328,7 +328,7 @@ Configuration Function App functions polling each EPs _Incoming_ directory for t
 
 The source code of these function located in _./Configuration/func_ directory
 
-![Configuration functions](./img/configuration_functions.PNG)
+![Configuration functions](./img/configuration_functions_v1.PNG)
 
 ## Known issues and further improvements
 

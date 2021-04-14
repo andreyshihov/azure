@@ -269,7 +269,7 @@ This Plane can't be deployed on its own and depends on the resources deployed by
 
 This solution deploys separate Security Group for each External party. This group then get "Storage Blob Data Contributor" role assignment to the Container specifically create for this EP.
 
-![Groups](./img/groups.PNG)
+![Groups](./img/groups_v2.PNG)
 
 B2B (Guest) Users accounts creation and assignment to the Security Group is out of scope of this prototype solution and should be done manually. This can be potentially resolved in the future improvement rounds.
 

@@ -233,14 +233,15 @@ Service Container stores utility meta-files to support basic solution's function
 
 #### Infrastructure Function App
 
-Infrastructure Function App contains two functions
+Infrastructure Function App contains following functions:
 
-* Infrastructure - polling _infrastructure_ Queue
-* Service - polling _service_ Container
+* **Archive** - polling _archive_ Container. It changes blobs access tier to _Archive_
+* **Infrastructure** - polling _infrastructure_ Queue
+* **Service** - polling _service_ Container
 
 Infrastructure Plane Function App's implementation details can be found in the Source Code located at "./Infrastructure/func/"
 
-![Infrastructure Function Apps](./img/infrastructure_functions_v1.PNG)
+![Infrastructure Function Apps](./img/infrastructure_functions_v2.PNG)
 
 ### Configuration Plane
 

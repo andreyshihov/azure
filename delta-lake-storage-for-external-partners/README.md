@@ -85,12 +85,12 @@ This solution will not be tested to process large files. This solution should be
 * Deploy new tagged Storage Account with enabled Hierarchical Name Space (Data Lake Store)
 * Deploy App Insights to analyze Function App activities
 * Handle environment specific Terraform.tfvars files to support various deployment environment e.g. DEV, TEST, PROD
-* Move originally uploaded EPs' files into Archive Container with *Archive access tier* enabled (not implemented yet)
+* Move originally uploaded EPs' files into Archive Container with *Archive access tier* enabled
 * Move originally uploaded EPs' files into Ingest Container and rename them following appropriate naming convention defined by an interface (see above)
 
 ### It can't
 
-* Use existing Security Groups. As a workaround, use *terraform import* to converge states or change *resource* blocks to *data* blocks for Security Groups deployment
+* Use existing Security Groups. As a workaround, use *terraform import* to converge infrastructure states or change *resource* blocks to *data* blocks for Security Groups deployment
 * Create new B2B Guest Users and add them to the Security Groups. This option is currently [unavailable](https://github.com/hashicorp/terraform-provider-azuread/issues/41) in Terraform
 * Purging old files after expiration of the retention period
 
@@ -98,13 +98,13 @@ This solution will not be tested to process large files. This solution should be
 
 ### IaC and CaC
 
-This SBB logically separates Infrastructure Plane from Configuration Plane. The idea is to get all nessessary Infrastructure components to be deployed and maintained in Infrastructure Plane and Configuration Components to be deployed and maintained in Configuration Plane. Commands from Configuration Plane to Infrastructure Plane published via Queue.
+This SBB logically separates Infrastructure Plane from Configuration Plane. The idea is to get all nessessary Infrastructure components to be deployed and maintained in Infrastructure Plane and Configuration Components to be deployed and maintained in Configuration Plane. Commands from Configuration Plane to Infrastructure Plane published via Queue or meta-blobs.
 
 This concept brings such benefits as:
 
 * Independed Plane deployment improves robustness of the solution
 * Smaller and easier to test release scopes
-* Back-End Interface (Infrastructure Plane) is separated from the Front-End Interface allowing back-end systems to continue their workloads in case of issue in the Configuration Plane
+* Back-End Interface (Infrastructure Plane) is separated from the Front-End Interface allowing back-end systems to continue their workloads in case of issue in the Configuration Plane, and vice versa.
 
 **Infrastructure Plane** suppose to ensure that all nesessary resources are available and frequent change to these resources is not expected.
 
@@ -135,17 +135,17 @@ In case if basic user experience capabilities are enough for the EPs interation,
 
 ### Hot vs Cool access tiers
 
-#### All catalogs except Archive
+#### All Containers except Archive
 
 Main expected capability of this SBB is to provide a secure gateway for EPs' data files transmission that doesn't require various copies of original files to be stored in it for a long period of time. In addition, access to this files is frequent and with high availability requirement for the data to be ingested ASAP. Based on this conclusion, all containers except Archive should be running on *Hot* access tier.
 
-#### Archive catalog
+#### Archive Containers
 
-To support audit requirements, all originally submitted files should be archived for potential analysis/investigation in the future. The volume of this data files is large, but access is rare and doesn't need to be immediate, therefore default access tier for the Archive catalog is *Archive*
+To support audit requirements, all originally submitted files should be archived for analysis/investigation in the future. The volume of this data files is large, but access is rare and doesn't need to be immediate, therefore all files copied into Archive Container should have _Archive_ access tier set.
 
-### Archive & Log Catalogs
+### Archive & Log Containers
 
-To reduce potential security vulnerability surface, Archive and Log catalogs could be deployed in a publically inaccessible data store.
+To reduce security vulnerability surface Archive and Log Containers must be deployed in private data store.
 
 ### In-process vs Out-of-process (Isolated) Function App
 

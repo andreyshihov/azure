@@ -4,7 +4,8 @@ using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage.Queue;
-using func.Model;
+using lib.Model;
+using lib;
 
 namespace func
 {

@@ -1,8 +1,8 @@
 using System.Text.Json;
 
-namespace func.Model
+namespace lib.Model
 {
-    internal class BlobMetadata
+    public class BlobMetadata
     {
         // Required for Deserializer
         // TODO - empty constructor code smell should be reviewed
@@ -10,20 +10,17 @@ namespace func.Model
         {
         }
 
-        public BlobMetadata(Command command, string blobName, string blobPath, string containerName, object payload)
+        public BlobMetadata(Command command, string blobName, string blobPath, string containerName)
         {
             Command = command;
             BlobName = blobName;
             BlobPath = blobPath;
             ContainerName = containerName;
-            Payload = payload;
         }
-
         public Command Command { get; set; }
         public string BlobName { get; set; }
         public string BlobPath { get; set; }
         public string ContainerName { get; set; }
-        public object Payload { get; set; }
 
         public override string ToString()
         {

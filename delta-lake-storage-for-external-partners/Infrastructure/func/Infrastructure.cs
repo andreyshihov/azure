@@ -1,6 +1,7 @@
 using System.IO;
 using System.Threading.Tasks;
-using func.Model;
+using lib.Model;
+using lib;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 

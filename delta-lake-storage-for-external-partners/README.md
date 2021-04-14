@@ -149,7 +149,7 @@ To reduce potential security vulnerability surface, Archive and Log catalogs cou
 
 ### In-process vs Out-of-process (Isolated) Function App
 
-This solution uses In-process Function App Implementation which imposes some fine-tune disadvantages. It is possible to implement it in Isolated process but potentially requires more coding as some features like Imperative Binding aren't available in Isolated mode. To get to know pros/cons and limitations of both modes read [Guide for running functions on .NET 5.0 in Azure](https://docs.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-process-guide#differences-with-net-class-library-functions) 
+This solution uses In-process Function App Implementation which imposes some fine-tune disadvantages. It is possible to implement it in Isolated process but potentially requires more coding as some features like Imperative Binding aren't available in Isolated mode. To get to know pros/cons and limitations of both modes read [Guide for running functions on .NET 5.0 in Azure](https://docs.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-process-guide#differences-with-net-class-library-functions)
 
 ## Workspace
 
@@ -318,7 +318,7 @@ To establish secure connection with a Container, each External Party's B2B Guest
 
 To implement Front-End interface, Each EP's Container should have apropriate directories defined in detailed Front-End interface. Configuration Plane's Terraform script creates special meta-blobs in _Service_ Container. These meta-blobs will be picked up by a Function App which then will create these directories in the newly created External Party's Container.
 
-The naming convetion for this meta-blobs is <EpId>-init-container.
+The naming convetion for this meta-blobs is \<EpId>-init-container.
 
 ![Meta-blobs](./img/service_container.PNG)
 

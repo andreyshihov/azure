@@ -1,3 +1,4 @@
+using System.IO;
 using System.Threading.Tasks;
 using func.Model;
 using Microsoft.Azure.WebJobs;
@@ -19,9 +20,18 @@ namespace func
                 case Command.Delete:
                     await Common.DeleteBlobAsync(blobMetadata, log);
                     break;
-                case Command.InitContainer:
-                    await Common.InitContainerAsync(blobMetadata, log);
-                    break;
+            }
+        }
+
+        [FunctionName("Service")]
+        public static async Task ServiceRun(
+            [BlobTrigger("service/{name}")] Stream newBlob,
+            string name,
+            ILogger log)
+        {
+            if (name.EndsWith("-init-container"))
+            {
+                await Common.InitContainerAsync(name.Replace("-init-container", string.Empty), log);
             }
         }
     }

@@ -34,13 +34,13 @@ variable "fa_arch_path" {
 variable "infr_fa_version" {
   description = "Version of the Infrastructure Function App."
   type        = string
-  default     = "0.0.1"
+  default     = "0.0.7"
 }
 
 variable "conf_fa_version" {
   description = "Version of the Infrastructure Function App."
   type        = string
-  default     = "0.0.5"
+  default     = "0.0.2"
 }
 
 variable "location" {
@@ -58,7 +58,7 @@ locals {
 
   tags     = merge(var.resource_tags, local.required_tags)
   rg_name  = "${var.project_name}-${var.environment}-rg"
-  sa_name  = "lrsbronze${var.environment}"
+  sa_name  = replace("${var.project_name}${var.environment}dlg2", "-", "")
   asp_name = "${var.project_name}-${var.environment}-plan"
   infr_fa_name  = "${var.project_name}-${var.environment}-infr-fa"
   conf_fa_name  = "${var.project_name}-${var.environment}-conf-fa"

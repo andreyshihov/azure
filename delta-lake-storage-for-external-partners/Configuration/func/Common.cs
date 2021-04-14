@@ -45,23 +45,13 @@ namespace func
             };
 
             // Blob metadata to be serialized and added in the queue for deletion
-            BlobMetadata blobMetadata = new BlobMetadata(Command.Delete, PayloadType.Empty, name, "Incoming", container, null);
+            BlobMetadata blobMetadata = new BlobMetadata(Command.Delete, name, "Incoming", container);
 
             // After we have completed our business with the original file, we are safe to delete it
             var cloudQueue = await binder.BindAsync<CloudQueue>(new QueueAttribute(INFRASTRUCTURE_QUEUE_NAME));
             await cloudQueue.AddMessageAsync(new CloudQueueMessage(blobMetadata.ToString()));
 
             log.LogInformation($"Incoming blob has been queued for deletion\n Name:{name}");
-        }
-
-        public static async Task InitContainer(string name, IBinder binder, ILogger log)
-        {
-            log.LogInformation($"Start to init container: {name}");
-
-            BlobMetadata blobMetadata = new BlobMetadata(Command.InitContainer, PayloadType.Empty, string.Empty, string.Empty, name, null);
-
-            var cloudQueue = await binder.BindAsync<CloudQueue>(new QueueAttribute(INFRASTRUCTURE_QUEUE_NAME));
-            await cloudQueue.AddMessageAsync(new CloudQueueMessage(blobMetadata.ToString()));
         }
     }
 }

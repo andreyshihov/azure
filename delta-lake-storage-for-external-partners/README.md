@@ -233,7 +233,10 @@ Service Container stores utility meta-files to support basic solution's function
 
 #### Infrastructure Function App
 
-Infrastructure Function App polling _infrastructure_ queue. There are two types of messages that can be consumed by these Function Apps: Initiate Container and Delete Blob. These messages are produced by the Function App from Configuration Plane.
+Infrastructure Function App contains two functions
+
+* Infrastructure - polling _infrastructure_ Queue
+* Service - polling _service_ Container
 
 Infrastructure Plane Function App's implementation details can be found in the Source Code located at "./Infrastructure/func/"
 
@@ -283,13 +286,13 @@ External Party's Container view in the Azure Portal
 
 ![Partner Containers](./img/partner_containers.PNG)
 
-External Party's Container view in the Azure Storage Explorer
+External Party's attached Container view in the Azure Storage Explorer
 
 ![Partner Containers](./img/front-end_interface.PNG)
 
 External Party's attachment steps to the secure Container.
 
-Step 1.
+Step 1. Select ADLS Gen2 container or directory option.
 
 ![Partner Attachment 1](./img/attachment_step_1.PNG)
 
@@ -321,14 +324,9 @@ The naming convetion for this meta-blobs is <EpId>-init-container.
 
 #### Configuration Function App
 
-Configuration Function App consists of two kinds of functions
+Configuration Function App functions polling each EPs _Incoming_ directory for the appearance of the new files (blobs). There's one function for one EP. The functionality of the function is exactly the same for each External Party.
 
-* Incoming_\<EpId>
-* Service
-
-**Icoming_\<EpId>** kind of functions polling Incoming directories of each External Party's Container. Their functionality is exactly the same.
-
-To complete basic solution's functionality, such as Container initialization, **Service** kind of functions polling _Service_ Container for the appearance of meta-blobs.
+The source code of these function located in _./Configuration/func_ directory
 
 ![Configuration functions](./img/configuration_functions.PNG)
 
@@ -347,10 +345,6 @@ Function App deployment Portal View
 
 ![Packaged deployment via provisioner 1](./img/fapp_init_failure.PNG)
 
-### Storage Account name doesn't follow naming convention
-
-The name of the Storage Account doesn't follow common for this solution naming convention. This should be fixed in the next Improvement round.
-
 ### Access Tier for the Blobs in Archive Container isn't set to _Archive_
 
 Access tier of the blobs in Archive Container is not set to _Archive_. This should be fixed in the next Improvement round.
@@ -359,9 +353,9 @@ Access tier of the blobs in Archive Container is not set to _Archive_. This shou
 
 B2B (Guest) Users accounts creation and assignment to the Security Group potentially can be implemented in the future improvement rounds.
 
-### _Service_ Function App inapropriate location
+### Terraform Service Principal Account
 
-Service Function App should be moved to Infrastructure Plane.
+Terraform Service Principle Account has been created outside of this deployment
 
 ### References
 

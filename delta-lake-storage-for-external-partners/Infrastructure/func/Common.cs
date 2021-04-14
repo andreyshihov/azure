@@ -30,9 +30,9 @@ namespace func
             return Environment.GetEnvironmentVariable(name, EnvironmentVariableTarget.Process);
         }
 
-        public static async Task InitContainerAsync(BlobMetadata blobMetadata, ILogger log)
+        public static async Task InitContainerAsync(string containerName, ILogger log)
         {
-            log.LogInformation($"Start to init container: {blobMetadata.ContainerName}");
+            log.LogInformation($"Start to init container: {containerName}");
 
             string serviceEndpoint = string.Format("https://{0}.blob.core.windows.net/", Common.GetEnvironmentVariable("SA_NAME"));
             List<string> directories = new List<string> { "Incoming", "Ok", "Fail", "Report" };
@@ -42,14 +42,14 @@ namespace func
                 foreach (var directory in directories)
                 {
                     DataLakeServiceClient dataLakeServiceClient = new DataLakeServiceClient(new Uri(serviceEndpoint), new DefaultAzureCredential());
-                    DataLakeFileSystemClient dataLakeFileSystemClient = dataLakeServiceClient.GetFileSystemClient(blobMetadata.ContainerName);
+                    DataLakeFileSystemClient dataLakeFileSystemClient = dataLakeServiceClient.GetFileSystemClient(containerName);
                     DataLakeDirectoryClient dataLakeDirectoryClient = dataLakeFileSystemClient.GetDirectoryClient(directory);
                     await dataLakeDirectoryClient.CreateIfNotExistsAsync();
                 }
             }
             catch (RequestFailedException)
             {
-                log.LogInformation($"Failed to complete container initialisation operation: {blobMetadata.ContainerName}");
+                log.LogInformation($"Failed to complete container initialisation operation: {containerName}");
                 throw;
             }
         }

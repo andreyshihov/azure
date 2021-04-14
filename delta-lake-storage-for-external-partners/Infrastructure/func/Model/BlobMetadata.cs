@@ -10,9 +10,8 @@ namespace func.Model
         {
         }
 
-        public BlobMetadata(Command command, PayloadType payloadType, string blobName, string blobPath, string containerName, object payload)
+        public BlobMetadata(Command command, string blobName, string blobPath, string containerName, object payload)
         {
-            PayloadType = payloadType;
             Command = command;
             BlobName = blobName;
             BlobPath = blobPath;
@@ -20,7 +19,6 @@ namespace func.Model
             Payload = payload;
         }
 
-        public PayloadType PayloadType { get; set; }
         public Command Command { get; set; }
         public string BlobName { get; set; }
         public string BlobPath { get; set; }

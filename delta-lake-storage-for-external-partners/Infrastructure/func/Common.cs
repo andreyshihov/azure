@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Azure.Storage.Blobs;
 using Azure.Storage.Files.DataLake;
-using func.Model;
+using lib.Model;
 using Azure.Identity;
 using Azure;
 using System.Collections.Generic;

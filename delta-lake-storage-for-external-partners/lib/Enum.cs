@@ -1,4 +1,4 @@
-namespace func
+namespace lib
 {
     public enum Command
     {

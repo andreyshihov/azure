@@ -4,7 +4,8 @@ using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage.Queue;
-using func.Model;
+using lib.Model;
+using lib;
 
 namespace func
 {
@@ -45,7 +46,7 @@ namespace func
             };
 
             // Blob metadata to be serialized and added in the queue for deletion
-            BlobMetadata blobMetadata = new BlobMetadata(Command.Delete, name, "Incoming", container);
+            var blobMetadata = new BlobMetadata(Command.Delete, name, "Incoming", container);
 
             // After we have completed our business with the original file, we are safe to delete it
             var cloudQueue = await binder.BindAsync<CloudQueue>(new QueueAttribute(INFRASTRUCTURE_QUEUE_NAME));

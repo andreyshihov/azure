@@ -199,7 +199,7 @@ Group and Resources
 * ext-gtw-dev-conf-fa - Function App Resource where _Configuration Plane_ Function Apps get deployed
 * ext-gtw-dev-infr-fa - Function App Resource where _Infrastructure Plane_ Function Apps get deployed
 * ext-gtw-dev-plan - Application Service Plan for both Function Apps
-* lrsbronzedev - Data Lake Gen 2 Storage Account to securely store EPs blob data. (_The name should be changed to follow solution's naming convention in the next improvement round_)
+* extgtwdevdlg2 - Data Lake Gen 2 Storage Account to securely store EPs data files.
 
 ### Storage Account
 

@@ -26,7 +26,7 @@ System responsible for data ingest, e.g. Azure Data Factory (ADF), regularly sca
 
 ### File naming convention
 
-EPs' uploaded files should be renamed following defined naming convention. This naming convention should:
+EPs' uploaded files should be renamed following defined naming convention. This naming convention should do the following:
 
 * guarantee unique file naming in the organisation's global namespace
 * contain meta-information allowing ADF map new data to the relevant EPs in the internal data stores
@@ -35,19 +35,19 @@ EPs' uploaded files should be renamed following defined naming convention. This 
 
 ### Front-End Interface
 
-After successful EP's authentication, its Home Container contains following directories
+After successful EP's authentication, its Home Container contains following directories:
 
-* Incoming - drop-off zone for the new data files
-* Report - Human readable data ingest results report for each data file
-* OK - 0KB files indicating successful ingest
-* Fail - 0KB files indication failed ingest
+* **Incoming** - drop-off zone for the new data files
+* **Report** - Human readable data ingest results report for each data file
+* **OK** - 0KB files indicating successful ingest
+* **Fail** - 0KB files indication failed ingest
 
 ### Back-End Interface
 
 Following containers defining Back-End interface
 
-* Ingest - contains data files ready to be processed by data ingestion system e.g. ADF
-* Archive - contains original EPs files for audit purposes
+* **Ingest** - contains data files ready to be processed by data ingestion system e.g. ADF
+* **Archive** - contains original EPs files for audit purposes
 
 ## Solution's Scope
 
@@ -100,7 +100,7 @@ This solution will not be tested to process large files. This solution should be
 
 This SBB logically separates Infrastructure Plane from Configuration Plane. The idea is to get all nessessary Infrastructure components to be deployed and maintained in Infrastructure Plane and Configuration Components to be deployed and maintained in Configuration Plane. Commands from Configuration Plane to Infrastructure Plane published via Queue.
 
-This concept brings such benefits as
+This concept brings such benefits as:
 
 * Independed Plane deployment improves robustness of the solution
 * Smaller and easier to test release scopes
@@ -195,11 +195,11 @@ Note that new EP's Container get created in _Configuration Plane_. Once Containe
 Group and Resources
 ![Resources](./img/resource_group_v1.PNG)
 
-* ext-gtw-dev-apins - Application Insights Resource allows to monitor and troubleshoot Function Apps
-* ext-gtw-dev-conf-fa - Function App Resource where _Configuration Plane_ Function Apps get deployed
-* ext-gtw-dev-infr-fa - Function App Resource where _Infrastructure Plane_ Function Apps get deployed
-* ext-gtw-dev-plan - Application Service Plan for both Function Apps
-* extgtwdevdlg2 - Data Lake Gen 2 Storage Account to securely store EPs data files.
+* **ext-gtw-dev-apins** - Application Insights Resource allows to monitor and troubleshoot Function Apps
+* **ext-gtw-dev-conf-fa** - Function App Resource where _Configuration Plane_ Function Apps get deployed
+* **ext-gtw-dev-infr-fa** - Function App Resource where _Infrastructure Plane_ Function Apps get deployed
+* **ext-gtw-dev-plan** - Application Service Plan for both Function Apps
+* **extgtwdevdlg2** - Data Lake Gen 2 Storage Account to securely store EPs data files.
 
 ### Storage Account
 
@@ -292,7 +292,7 @@ External Party's attached Container view in the Azure Storage Explorer
 
 External Party's attachment steps to the secure Container.
 
-Step 1. Select "ADLS Gen2 container or directory" option.
+Step 1. Select _ADLS Gen2 container or directory_ option.
 
 ![Partner Attachment 1](./img/attachment_step_1.PNG)
 
@@ -344,10 +344,6 @@ Terraform Deployment Terminal View
 Function App deployment Portal View
 
 ![Packaged deployment via provisioner 1](./img/fapp_init_failure.PNG)
-
-### Access Tier for the Blobs in Archive Container isn't set to _Archive_
-
-Access tier of the blobs in Archive Container is not set to _Archive_. This should be fixed in the next Improvement round.
 
 ### B2B (Guest) User accounts and Security Group assignments
 

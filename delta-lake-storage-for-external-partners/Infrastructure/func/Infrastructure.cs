@@ -10,7 +10,7 @@ namespace func
     public static class Infrastructure
     {
         [FunctionName("Infrastructure")]
-        public static async Task Run(
+        public static async Task InfrastructureRun(
                 [QueueTrigger("infrastructure")] string myQueueItem,
                 ILogger log)
         {
@@ -34,6 +34,15 @@ namespace func
             {
                 await Common.InitContainerAsync(name.Replace("-init-container", string.Empty), log);
             }
+        }
+
+        [FunctionName("Archive")]
+        public static async Task ArchiveRun(
+            [BlobTrigger("archive/{name}")] Stream newBlob,
+            string name,
+            ILogger log)
+        {
+            await Common.ArchiveBlobAsync(name, log);
         }
     }
 }

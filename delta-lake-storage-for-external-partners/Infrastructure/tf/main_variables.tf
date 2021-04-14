@@ -34,13 +34,13 @@ variable "fa_arch_path" {
 variable "infr_fa_version" {
   description = "Version of the Infrastructure Function App."
   type        = string
-  default     = "0.0.7"
+  default     = "0.0.2"
 }
 
 variable "conf_fa_version" {
   description = "Version of the Infrastructure Function App."
   type        = string
-  default     = "0.0.1"
+  default     = "0.0.2"
 }
 
 variable "location" {

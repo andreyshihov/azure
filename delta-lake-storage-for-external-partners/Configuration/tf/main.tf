@@ -75,6 +75,7 @@ resource "azurerm_storage_blob" "init" {
   storage_container_name = "service"
   type                   = "Block"
   count                  = length(var.accounts)
+  access_tier            = "Cool"
 }
 
 ##################################################################################

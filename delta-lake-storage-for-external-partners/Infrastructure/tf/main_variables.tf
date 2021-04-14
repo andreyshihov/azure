@@ -58,7 +58,7 @@ locals {
 
   tags     = merge(var.resource_tags, local.required_tags)
   rg_name  = "${var.project_name}-${var.environment}-rg"
-  sa_name  = "lrsbronze${var.environment}"
+  sa_name  = replace("${var.project_name}${var.environment}dlg2", "-", "")
   asp_name = "${var.project_name}-${var.environment}-plan"
   infr_fa_name  = "${var.project_name}-${var.environment}-infr-fa"
   conf_fa_name  = "${var.project_name}-${var.environment}-conf-fa"

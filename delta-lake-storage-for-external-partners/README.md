@@ -10,7 +10,7 @@ EPs data considered as Bronze Grade data, it has to be validated and transformed
 
 This SBB focuses on a secure data files upload gateway capability for the External parties. It should be cost effective, easy to maintain, and use available tools and services, including free, secure options. 
 
-To comply with this principles, [Azure Storage Explorer](https://docs.microsoft.com/en-us/azure/vs-azure-tools-storage-manage-with-storage-explorer?tabs=windows) tool has been chosen to facilitate secure and reliable data upload capability.
+To comply with these principles, [Azure Storage Explorer](https://docs.microsoft.com/en-us/azure/vs-azure-tools-storage-manage-with-storage-explorer?tabs=windows) tool has been chosen to facilitate secure and reliable data upload capability.
 
 ## Solution's Architecture
 

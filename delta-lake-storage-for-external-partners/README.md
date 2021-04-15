@@ -1,12 +1,14 @@
-# Solution Building Block (SBB): Enable secure data ingestion gateway capability for the External Parties (Customers)
+# Solution Building Block (SBB): Enable secure data ingestion gateway capability for the External Parties
 
 > This solution is a PoC prototype and not recommended to be used in Production Environment. If you decide to use it in Production Environment - you do it at your own risk. Read "Known issues and further improvements" section to get an idea about where this prototype has an improvement potential.
 
-## Part 1. Definition
+## Part 1. Definition and scope
 
-Every business need secure and reliable way to receive data from its customers, partners or suppliers. They could be called - External Parties (EP). This data considered as Bronze Grade data, that is - it has to be validated and transformed before it can reach production analytics engines, AI/ML modeling tools, destination systems and data stores.
+Every business need secure and reliable way to receive data from its customers, partners or suppliers. Let call them - External Parties (EP).
 
-The SBB should be cost effective, easy to maintain and use available tools and services, including free, secure options. To comply with this principles, [Azure Storage Explorer](https://docs.microsoft.com/en-us/azure/vs-azure-tools-storage-manage-with-storage-explorer?tabs=windows) tool has been chosen to facilitate secure and reliable data upload capability.
+EPs data considered as Bronze Grade data, it has to be validated and transformed before it can reach production analytics engines, AI/ML modeling tools, destination systems and data stores. But this is another Building Block (BB).
+
+This SBB focuses on a secure data files upload Gateway capability for the External parties. It should be cost effective, easy to maintain, and use available tools and services, including free, secure options. To comply with this principles, [Azure Storage Explorer](https://docs.microsoft.com/en-us/azure/vs-azure-tools-storage-manage-with-storage-explorer?tabs=windows) tool has been chosen to facilitate secure and reliable data upload capability.
 
 ## Solution's Architecture
 

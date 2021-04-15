@@ -8,7 +8,9 @@ Every business need secure and reliable way to receive data from its customers, 
 
 EPs data considered as Bronze Grade data, it has to be validated and transformed before it can reach production analytics engines, AI/ML modeling tools, destination systems and data stores. But this is another Building Block (BB).
 
-This SBB focuses on a secure data files upload Gateway capability for the External parties. It should be cost effective, easy to maintain, and use available tools and services, including free, secure options. To comply with this principles, [Azure Storage Explorer](https://docs.microsoft.com/en-us/azure/vs-azure-tools-storage-manage-with-storage-explorer?tabs=windows) tool has been chosen to facilitate secure and reliable data upload capability.
+This SBB focuses on a secure data files upload gateway capability for the External parties. It should be cost effective, easy to maintain, and use available tools and services, including free, secure options. 
+
+To comply with this principles, [Azure Storage Explorer](https://docs.microsoft.com/en-us/azure/vs-azure-tools-storage-manage-with-storage-explorer?tabs=windows) tool has been chosen to facilitate secure and reliable data upload capability.
 
 ## Solution's Architecture
 
